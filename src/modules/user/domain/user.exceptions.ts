@@ -34,8 +34,3 @@ export class InvalidCredentialsException extends DomainException {
   }
 }
 
-export class UserDomainError extends DomainException {
-  constructor(message: string) {
-    super(message, 'USER_DOMAIN_ERROR', 'BUSINESS_RULE');
-  }
-}

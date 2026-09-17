@@ -5,7 +5,7 @@ export interface LoggerModuleOptions {
   pinoHttp?: Params['pinoHttp'];
 }
 
-export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
+export const { ConfigurableModuleClass } =
   new ConfigurableModuleBuilder<LoggerModuleOptions>()
     .setClassMethodName('forRoot')
     .setExtras({ isGlobal: false }, (definition, extras) => ({
