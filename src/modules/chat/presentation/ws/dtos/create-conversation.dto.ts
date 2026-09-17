@@ -3,7 +3,7 @@ import {
   IsNumberString,
   IsString,
   MinLength,
-} from 'class-validator';
+} from "class-validator";
 
 export class CreateConversationRequest {
   @IsNotEmpty()
@@ -15,6 +15,3 @@ export class CreateConversationRequest {
   @MinLength(1)
   content: string;
 }
-
-
-

@@ -1,3 +1,5 @@
+import { DomainException } from "@common/exceptions/domain.exception";
+import { mapDomainErrorTypeToHttpStatus } from "@common/exceptions/exception-mapper";
 import {
   ArgumentsHost,
   Catch,
@@ -5,10 +7,8 @@ import {
   HttpException,
   HttpStatus,
   Logger,
-} from '@nestjs/common';
-import { HttpAdapterHost } from '@nestjs/core';
-import { DomainException } from '@common/exceptions/domain.exception';
-import { mapDomainErrorTypeToHttpStatus } from '@common/exceptions/exception-mapper';
+} from "@nestjs/common";
+import { HttpAdapterHost } from "@nestjs/core";
 
 @Catch()
 export class GlobalHttpExceptionFilter implements ExceptionFilter {
@@ -24,10 +24,10 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
     if (
       exception instanceof DomainException ||
       (exception &&
-        typeof exception === 'object' &&
-        'type' in exception &&
-        'code' in exception &&
-        'message' in exception)
+        typeof exception === "object" &&
+        "type" in exception &&
+        "code" in exception &&
+        "message" in exception)
     ) {
       const type = (exception as any).type;
       const code = (exception as any).code;
@@ -38,10 +38,10 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
         ctx.getResponse(),
         {
           statusCode: httpStatus,
-          message: message,
+          message,
           error: code,
         },
-        httpStatus,
+        httpStatus
       );
     }
 
@@ -50,13 +50,13 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
       return httpAdapter.reply(
         ctx.getResponse(),
         exception.getResponse(),
-        exception.getStatus(),
+        exception.getStatus()
       );
     }
 
     this.logger.error(
       `Unhandled exception: ${exception}`,
-      exception instanceof Error ? exception.stack : undefined,
+      exception instanceof Error ? exception.stack : undefined
     );
 
     // Unhandled internal errors
@@ -64,9 +64,9 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
       ctx.getResponse(),
       {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Internal server error',
+        message: "Internal server error",
       },
-      HttpStatus.INTERNAL_SERVER_ERROR,
+      HttpStatus.INTERNAL_SERVER_ERROR
     );
   }
 }

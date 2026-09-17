@@ -1,7 +1,7 @@
-import { ArgumentsHost, Catch, Logger } from '@nestjs/common';
-import { BaseWsExceptionFilter, WsException } from '@nestjs/websockets';
-import { DomainException } from '@common/exceptions/domain.exception';
-import { mapDomainErrorTypeToHttpStatus } from '@common/exceptions/exception-mapper';
+import { DomainException } from "@common/exceptions/domain.exception";
+import { mapDomainErrorTypeToHttpStatus } from "@common/exceptions/exception-mapper";
+import { ArgumentsHost, Catch, Logger } from "@nestjs/common";
+import { BaseWsExceptionFilter, WsException } from "@nestjs/websockets";
 
 @Catch()
 export class GlobalWsExceptionFilter extends BaseWsExceptionFilter {
@@ -23,27 +23,27 @@ export class GlobalWsExceptionFilter extends BaseWsExceptionFilter {
       };
     } else if (exception instanceof WsException) {
       const error = exception.getError();
-      if (typeof error === 'string') {
+      if (typeof error === "string") {
         response = { statusCode: 400, message: error };
-      } else if (typeof error === 'object' && error !== null) {
+      } else if (typeof error === "object" && error !== null) {
         response = {
-          statusCode: error['code'] || error['statusCode'] || 400,
-          message: error['message'] || error,
+          statusCode: error["code"] || error["statusCode"] || 400,
+          message: error["message"] || error,
         };
       } else {
-        response = { statusCode: 400, message: 'An unexpected error occurred' };
+        response = { statusCode: 400, message: "An unexpected error occurred" };
       }
     } else {
-      response = { statusCode: 500, message: 'Internal server error' };
+      response = { statusCode: 500, message: "Internal server error" };
     }
 
-    if (typeof client.emit === 'function' && pattern) {
+    if (typeof client.emit === "function" && pattern) {
       const args = host.getArgs();
-      const callback = args[args.length - 1];
-      if (typeof callback === 'function') {
+      const callback = args.at(-1);
+      if (typeof callback === "function") {
         callback(response);
       } else {
-        client.emit('error.server', response);
+        client.emit("error.server", response);
       }
     }
   }

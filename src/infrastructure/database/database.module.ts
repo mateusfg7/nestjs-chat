@@ -1,11 +1,11 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigModule, ConfigType } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { LoggerModule } from '../logger/logger.module';
-import { postgresConfig } from '@infrastructure/database/postgres/config/postgres.config';
-import { DatabaseType } from './database-type.enum';
-import { PinoLogger } from 'nestjs-pino';
-import { TypeOrmLoggerAdapter } from './typeorm-logger.adapter';
+import { postgresConfig } from "@infrastructure/database/postgres/config/postgres.config";
+import { DynamicModule, Module } from "@nestjs/common";
+import { ConfigModule, ConfigType } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { PinoLogger } from "nestjs-pino";
+import { LoggerModule } from "../logger/logger.module";
+import { DatabaseType } from "./database-type.enum";
+import { TypeOrmLoggerAdapter } from "./typeorm-logger.adapter";
 
 @Module({})
 export class DatabaseModule {
@@ -31,11 +31,11 @@ export class DatabaseModule {
       imports: [ConfigModule.forFeature(postgresConfig), LoggerModule],
       useFactory: async (
         dbConfig: ConfigType<typeof postgresConfig>,
-        logger: PinoLogger,
+        logger: PinoLogger
       ) => {
         return {
           name: DatabaseType.POSTGRES, // Do not delete. Used in application shutdown.
-          type: 'postgres',
+          type: "postgres",
           host: dbConfig.host,
           port: dbConfig.port,
           username: dbConfig.username,
@@ -48,9 +48,9 @@ export class DatabaseModule {
             application_name: dbConfig.applicationName,
           },
           autoLoadEntities: true,
-          migrations: ['dist/**/postgres/migrations/**/*.js'],
+          migrations: ["dist/**/postgres/migrations/**/*.js"],
           migrationsRun: false,
-          migrationsTableName: 'typeorm_migrations',
+          migrationsTableName: "typeorm_migrations",
           synchronize: false,
           logging: dbConfig.log,
           logger: new TypeOrmLoggerAdapter(logger),

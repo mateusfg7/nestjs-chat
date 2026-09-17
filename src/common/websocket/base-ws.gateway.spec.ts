@@ -1,6 +1,6 @@
-import { BaseWsGateway } from './base-ws.gateway';
-import { Server, Socket } from 'socket.io';
-import { BaseWsEvent } from './base-ws-event';
+import { Server, Socket } from "socket.io";
+import { BaseWsGateway } from "./base-ws.gateway";
+import { BaseWsEvent } from "./base-ws-event";
 
 class TestGateway extends BaseWsGateway {
   server: Server;
@@ -20,30 +20,30 @@ class TestGateway extends BaseWsGateway {
 
 class TestEvent extends BaseWsEvent<any> {
   get eventName() {
-    return 'test.event';
+    return "test.event";
   }
 }
 
-describe('BaseWsGateway', () => {
+describe("BaseWsGateway", () => {
   let gateway: TestGateway;
 
   beforeEach(() => {
     gateway = new TestGateway();
   });
 
-  describe('broadcast', () => {
-    it('should broadcast event to rooms', async () => {
+  describe("broadcast", () => {
+    it("should broadcast event to rooms", async () => {
       const client = {
         broadcast: { to: jest.fn().mockReturnThis(), emit: jest.fn() },
       } as unknown as Socket;
-      const event = new TestEvent({ data: 'val' });
+      const event = new TestEvent({ data: "val" });
 
-      await gateway.broadcast(client, ['room-1'], event);
+      await gateway.broadcast(client, ["room-1"], event);
 
-      expect(client.broadcast.to).toHaveBeenCalledWith(['room-1']);
+      expect(client.broadcast.to).toHaveBeenCalledWith(["room-1"]);
       expect((client.broadcast.to as any)().emit).toHaveBeenCalledWith(
-        'test.event',
-        { data: 'val' },
+        "test.event",
+        { data: "val" }
       );
     });
   });

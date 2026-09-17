@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthSaga } from './auth.saga';
-import { SignupFailedEvent } from '@modules/auth/domain/events/signup-failed.event';
-import { DeleteUserCommand } from '@modules/user/application/commands/delete-user/delete-user.command';
-import { of } from 'rxjs';
-import { toArray } from 'rxjs/operators';
+import { SignupFailedEvent } from "@modules/auth/domain/events/signup-failed.event";
+import { DeleteUserCommand } from "@modules/user/application/commands/delete-user/delete-user.command";
+import { Test, TestingModule } from "@nestjs/testing";
+import { of } from "rxjs";
+import { toArray } from "rxjs/operators";
+import { AuthSaga } from "./auth.saga";
 
-describe('AuthSaga', () => {
+describe("AuthSaga", () => {
   let saga: AuthSaga;
 
   beforeEach(async () => {
@@ -16,10 +16,10 @@ describe('AuthSaga', () => {
     saga = module.get<AuthSaga>(AuthSaga);
   });
 
-  describe('signupFailed', () => {
-    it('should map SignupFailedEvent to DeleteUserCommand', (done) => {
-      const event = new SignupFailedEvent('user-1');
-      const events$ = of(event, { type: 'OtherEvent' }); // Mix in another event to ensure filtering
+  describe("signupFailed", () => {
+    it("should map SignupFailedEvent to DeleteUserCommand", (done) => {
+      const event = new SignupFailedEvent("user-1");
+      const events$ = of(event, { type: "OtherEvent" }); // Mix in another event to ensure filtering
 
       saga
         .signupFailed(events$)
@@ -27,7 +27,7 @@ describe('AuthSaga', () => {
         .subscribe((commands) => {
           expect(commands).toHaveLength(1);
           expect(commands[0]).toBeInstanceOf(DeleteUserCommand);
-          expect((commands[0] as DeleteUserCommand).id).toBe('user-1');
+          expect((commands[0] as DeleteUserCommand).id).toBe("user-1");
           done();
         });
     });

@@ -1,31 +1,28 @@
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { RefreshTokensCommand } from './refresh-tokens.command';
-import { Logger } from '@nestjs/common';
-
-import { TokenService } from '@modules/auth/application/services/token.service';
-import { AuthRepositoryPort } from '@modules/auth/application/ports/auth-repository.port';
-import { RefreshTokenEntity } from '@modules/auth/domain/models/refresh-token.entity';
-import { RefreshTokensOutput } from '@modules/auth/application/services/dtos/refresh-tokens.dto';
-import { RefreshTokenPayload } from '@modules/auth/domain/types/refresh-token-payload.type';
-import * as bcrypt from 'bcrypt';
-
+import { AuthRepositoryPort } from "@modules/auth/application/ports/auth-repository.port";
+import { RefreshTokensOutput } from "@modules/auth/application/services/dtos/refresh-tokens.dto";
+import { TokenService } from "@modules/auth/application/services/token.service";
 import {
   InvalidRefreshTokenException,
   TokenGenerationException,
-} from '@modules/auth/domain/auth.exceptions';
+} from "@modules/auth/domain/auth.exceptions";
+import { RefreshTokenEntity } from "@modules/auth/domain/models/refresh-token.entity";
+import { RefreshTokenPayload } from "@modules/auth/domain/types/refresh-token-payload.type";
+import { Logger } from "@nestjs/common";
+import { CommandHandler, EventPublisher, ICommandHandler } from "@nestjs/cqrs";
+import * as bcrypt from "bcrypt";
+import { RefreshTokensCommand } from "./refresh-tokens.command";
 
 @CommandHandler(RefreshTokensCommand)
-export class RefreshTokensHandler implements ICommandHandler<
-  RefreshTokensCommand,
-  RefreshTokensOutput
-> {
+export class RefreshTokensHandler
+  implements ICommandHandler<RefreshTokensCommand, RefreshTokensOutput>
+{
   private readonly logger = new Logger(RefreshTokensHandler.name);
   private readonly HASH_SALT = 10;
 
   constructor(
     private readonly tokenService: TokenService,
     private readonly authRepository: AuthRepositoryPort,
-    private readonly publisher: EventPublisher,
+    private readonly publisher: EventPublisher
   ) {}
 
   async execute(command: RefreshTokensCommand): Promise<RefreshTokensOutput> {
@@ -33,20 +30,20 @@ export class RefreshTokensHandler implements ICommandHandler<
     try {
       // Verify the signature of the refresh token
       payload = await this.tokenService.verifyRefreshToken<RefreshTokenPayload>(
-        command.refreshToken,
+        command.refreshToken
       );
     } catch {
-      throw new InvalidRefreshTokenException('Invalid refresh token signature');
+      throw new InvalidRefreshTokenException("Invalid refresh token signature");
     }
 
     // Fetch from DB
     const currentTokenEntity = await this.authRepository.getRefreshToken(
       payload.jti,
-      payload.sub,
+      payload.sub
     );
     if (!currentTokenEntity) {
       this.logger.error(
-        `Error getting refresh token from DB for user ${payload.sub}`,
+        `Error getting refresh token from DB for user ${payload.sub}`
       );
       throw new InvalidRefreshTokenException();
     }
@@ -54,11 +51,11 @@ export class RefreshTokensHandler implements ICommandHandler<
     // Validate against hashed token
     const isRefreshTokenValid = await bcrypt.compare(
       command.refreshToken,
-      currentTokenEntity.token,
+      currentTokenEntity.token
     );
     if (!isRefreshTokenValid) {
       this.logger.error(
-        `Invalid refresh token hash match for user ${payload.sub}`,
+        `Invalid refresh token hash match for user ${payload.sub}`
       );
       throw new InvalidRefreshTokenException();
     }
@@ -72,20 +69,20 @@ export class RefreshTokensHandler implements ICommandHandler<
     // Generate and save new tokens
     const accessToken = await this.tokenService.signAccessToken(
       payload.sub,
-      command.userRole,
+      command.userRole
     );
     const refreshTokenDto = await this.tokenService.signRefreshToken(
-      payload.sub,
+      payload.sub
     );
 
     const hashedRefreshToken = await bcrypt.hash(
       refreshTokenDto.token,
-      this.HASH_SALT,
+      this.HASH_SALT
     );
     const newRefreshTokenEntity = RefreshTokenEntity.create(
       payload.sub,
       hashedRefreshToken,
-      refreshTokenDto.jti,
+      refreshTokenDto.jti
     );
 
     const newToken = this.publisher.mergeObjectContext(newRefreshTokenEntity);
@@ -95,7 +92,7 @@ export class RefreshTokensHandler implements ICommandHandler<
       // Fallback: restore the old one (as in original logic)
       tokenToRevoke.restore();
       await this.authRepository.save(tokenToRevoke);
-      throw new TokenGenerationException('Failed to save new refresh token');
+      throw new TokenGenerationException("Failed to save new refresh token");
     }
 
     tokenToRevoke.commit();

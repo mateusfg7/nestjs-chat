@@ -1,7 +1,7 @@
-import { Server, Socket } from 'socket.io';
-import { inspect } from 'node:util';
-import { BaseWsEvent } from '@common/websocket/base-ws-event';
-import { Logger } from '@nestjs/common';
+import { inspect } from "node:util";
+import { BaseWsEvent } from "@common/websocket/base-ws-event";
+import { Logger } from "@nestjs/common";
+import { Server, Socket } from "socket.io";
 
 export abstract class BaseWsGateway {
   abstract getLogger(): Logger;
@@ -9,17 +9,17 @@ export abstract class BaseWsGateway {
   async broadcast<T>(
     client: Socket,
     rooms: string[],
-    event: BaseWsEvent<T>,
+    event: BaseWsEvent<T>
   ): Promise<boolean> {
     if (rooms.length === 0) {
       this.getLogger().log(
-        `Rooms are empty; Skipping broadcast for event ${event.eventName}`,
+        `Rooms are empty; Skipping broadcast for event ${event.eventName}`
       );
       return false;
     }
 
     this.getLogger().debug(
-      `Broadcasting event ${event.eventName} to rooms ${rooms}: ${inspect(event.data)}`,
+      `Broadcasting event ${event.eventName} to rooms ${rooms}: ${inspect(event.data)}`
     );
     client.broadcast.to(rooms).emit(event.eventName, event.data);
 
@@ -29,17 +29,17 @@ export abstract class BaseWsGateway {
   async serverBroadcast<T>(
     server: Server,
     rooms: string[],
-    event: BaseWsEvent<T>,
+    event: BaseWsEvent<T>
   ): Promise<boolean> {
     if (rooms.length === 0) {
       this.getLogger().log(
-        `Rooms are empty; Skipping server broadcast for event ${event.eventName}`,
+        `Rooms are empty; Skipping server broadcast for event ${event.eventName}`
       );
       return false;
     }
 
     this.getLogger().debug(
-      `Server Broadcasting event ${event.eventName} to rooms ${rooms}: ${inspect(event.data)}`,
+      `Server Broadcasting event ${event.eventName} to rooms ${rooms}: ${inspect(event.data)}`
     );
     server.to(rooms).emit(event.eventName, event.data);
 

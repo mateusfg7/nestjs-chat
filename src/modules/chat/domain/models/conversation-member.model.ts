@@ -1,7 +1,7 @@
-import { Entity } from '@common/domain/entity';
-import { MessageEntity } from '@modules/chat/domain/models/message.entity';
-import { ConversationEntity } from '@modules/chat/domain/models/conversation.model';
-import { v7 as uuidv7 } from 'uuid';
+import { Entity } from "@common/domain/entity";
+import { ConversationEntity } from "@modules/chat/domain/models/conversation.model";
+import { MessageEntity } from "@modules/chat/domain/models/message.entity";
+import { v7 as uuidv7 } from "uuid";
 
 export class ConversationMemberEntity extends Entity<string> {
   private readonly _userId: string;
@@ -50,7 +50,7 @@ export class ConversationMemberEntity extends Entity<string> {
     conversationId: string,
     lastSeenMessageId?: string,
     lastMessageId?: string,
-    deletedAt?: Date,
+    deletedAt?: Date
   ) {
     super(id, createdAt, updatedAt);
     this._userId = userId;
@@ -62,14 +62,14 @@ export class ConversationMemberEntity extends Entity<string> {
 
   public static create(
     userId: string,
-    conversationId: string,
+    conversationId: string
   ): ConversationMemberEntity {
     return new ConversationMemberEntity(
       uuidv7(),
       new Date(),
       new Date(),
       userId,
-      conversationId,
+      conversationId
     );
   }
 
@@ -81,7 +81,7 @@ export class ConversationMemberEntity extends Entity<string> {
     lastMessageId: string | undefined,
     createdAt: Date,
     updatedAt: Date,
-    deletedAt?: Date,
+    deletedAt?: Date
   ): ConversationMemberEntity {
     return new ConversationMemberEntity(
       id,
@@ -91,7 +91,7 @@ export class ConversationMemberEntity extends Entity<string> {
       conversationId,
       lastSeenMessageId,
       lastMessageId,
-      deletedAt,
+      deletedAt
     );
   }
 

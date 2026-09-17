@@ -1,20 +1,19 @@
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { CreateMessageCommand } from './create-message.command';
-import { Logger } from '@nestjs/common';
-import { ConversationRepositoryPort } from '@modules/chat/application/ports/conversation-repository.port';
-import { MessageEntity } from '@modules/chat/domain/models/message.entity';
-import { WsException } from '@nestjs/websockets';
+import { ConversationRepositoryPort } from "@modules/chat/application/ports/conversation-repository.port";
+import { MessageEntity } from "@modules/chat/domain/models/message.entity";
+import { Logger } from "@nestjs/common";
+import { CommandHandler, EventPublisher, ICommandHandler } from "@nestjs/cqrs";
+import { WsException } from "@nestjs/websockets";
+import { CreateMessageCommand } from "./create-message.command";
 
 @CommandHandler(CreateMessageCommand)
-export class CreateMessageHandler implements ICommandHandler<
-  CreateMessageCommand,
-  MessageEntity
-> {
+export class CreateMessageHandler
+  implements ICommandHandler<CreateMessageCommand, MessageEntity>
+{
   private readonly logger = new Logger(CreateMessageHandler.name);
 
   constructor(
     private readonly commandRepo: ConversationRepositoryPort,
-    private readonly publisher: EventPublisher,
+    private readonly publisher: EventPublisher
   ) {}
 
   async execute(command: CreateMessageCommand): Promise<MessageEntity> {
@@ -23,12 +22,12 @@ export class CreateMessageHandler implements ICommandHandler<
     const conversation =
       await this.commandRepo.getConversationById(conversationId);
     if (!conversation) {
-      throw new WsException('Conversation not found');
+      throw new WsException("Conversation not found");
     }
 
     const member = conversation.members.find((m) => m.userId === senderId);
     if (!member) {
-      throw new WsException('User is not a member of the conversation');
+      throw new WsException("User is not a member of the conversation");
     }
 
     const message = this.publisher.mergeObjectContext(
@@ -37,8 +36,8 @@ export class CreateMessageHandler implements ICommandHandler<
         type,
         member.id,
         conversationId,
-        deletedForUserIds,
-      ),
+        deletedForUserIds
+      )
     );
 
     const savedMessage = await this.commandRepo.saveMessage(message);

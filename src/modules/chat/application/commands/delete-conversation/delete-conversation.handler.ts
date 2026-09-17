@@ -1,13 +1,12 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { DeleteConversationCommand } from './delete-conversation.command';
-import { Logger } from '@nestjs/common';
-import { ConversationRepositoryPort } from '@modules/chat/application/ports/conversation-repository.port';
+import { ConversationRepositoryPort } from "@modules/chat/application/ports/conversation-repository.port";
+import { Logger } from "@nestjs/common";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { DeleteConversationCommand } from "./delete-conversation.command";
 
 @CommandHandler(DeleteConversationCommand)
-export class DeleteConversationHandler implements ICommandHandler<
-  DeleteConversationCommand,
-  boolean
-> {
+export class DeleteConversationHandler
+  implements ICommandHandler<DeleteConversationCommand, boolean>
+{
   private readonly logger = new Logger(DeleteConversationHandler.name);
 
   constructor(private readonly commandRepo: ConversationRepositoryPort) {}

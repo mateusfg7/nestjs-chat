@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CreateUserHandler } from './create-user.handler';
-import { UserRepositoryPort } from '@modules/user/application/ports/user-repository.port';
-import { EventPublisher } from '@nestjs/cqrs';
-import { CreateUserCommand } from './create-user.command';
-import { UserAlreadyExistsException } from '@modules/user/domain/user.exceptions';
-import * as bcrypt from 'bcrypt';
+import { UserRepositoryPort } from "@modules/user/application/ports/user-repository.port";
+import { UserAlreadyExistsException } from "@modules/user/domain/user.exceptions";
+import { EventPublisher } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import * as bcrypt from "bcrypt";
+import { CreateUserCommand } from "./create-user.command";
+import { CreateUserHandler } from "./create-user.handler";
 
-jest.mock('bcrypt');
+jest.mock("bcrypt");
 
-describe('CreateUserHandler', () => {
+describe("CreateUserHandler", () => {
   let handler: CreateUserHandler;
   let userRepository: jest.Mocked<UserRepositoryPort>;
   let publisher: jest.Mocked<EventPublisher>;
@@ -47,37 +47,37 @@ describe('CreateUserHandler', () => {
     handler = module.get<CreateUserHandler>(CreateUserHandler);
   });
 
-  it('should throw UserAlreadyExistsException if email exists', async () => {
+  it("should throw UserAlreadyExistsException if email exists", async () => {
     userRepository.userExists.mockResolvedValue(true);
     const command = new CreateUserCommand(
-      'test@example.com',
-      'testuser',
-      'password',
+      "test@example.com",
+      "testuser",
+      "password"
     );
 
     await expect(handler.execute(command)).rejects.toThrow(
-      UserAlreadyExistsException,
+      UserAlreadyExistsException
     );
     expect(userRepository.userExists).toHaveBeenCalledWith({
-      email: 'test@example.com',
+      email: "test@example.com",
     });
   });
 
-  it('should create user successfully with hashed password', async () => {
+  it("should create user successfully with hashed password", async () => {
     userRepository.userExists.mockResolvedValue(false);
-    (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
+    (bcrypt.hash as jest.Mock).mockResolvedValue("hashedPassword");
 
     const command = new CreateUserCommand(
-      'test@example.com',
-      'testuser',
-      'password',
+      "test@example.com",
+      "testuser",
+      "password"
     );
     const user = await handler.execute(command);
 
     expect(userRepository.save).toHaveBeenCalledWith(user);
     expect(publisher.mergeObjectContext).toHaveBeenCalledWith(user);
     expect(user.commit).toHaveBeenCalled();
-    expect(user.password).toBe('hashedPassword');
-    expect(user.username).toBe('testuser');
+    expect(user.password).toBe("hashedPassword");
+    expect(user.username).toBe("testuser");
   });
 });

@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entities/user.entity';
-import { Repository } from 'typeorm';
-import { UserReadRepositoryPort } from '@modules/user/application/ports/user-read-repository.port';
-import { DatabaseType } from '@infrastructure/database/database-type.enum';
-import { UserReadDto } from '@modules/user/application/dtos/user-read.dto';
-import { UserBlock } from '@modules/user/infrastructure/database/postgres/entities/user-block.entity';
+import { DatabaseType } from "@infrastructure/database/database-type.enum";
+import { UserReadDto } from "@modules/user/application/dtos/user-read.dto";
+import { UserReadRepositoryPort } from "@modules/user/application/ports/user-read-repository.port";
+import { UserBlock } from "@modules/user/infrastructure/database/postgres/entities/user-block.entity";
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { User } from "../entities/user.entity";
 
 @Injectable()
 export class UserPostgresReadRepository implements UserReadRepositoryPort {
@@ -13,7 +13,7 @@ export class UserPostgresReadRepository implements UserReadRepositoryPort {
     @InjectRepository(User, DatabaseType.POSTGRES)
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserBlock, DatabaseType.POSTGRES) // Fixed entity injection
-    private readonly userBlockRepository: Repository<UserBlock>,
+    private readonly userBlockRepository: Repository<UserBlock>
   ) {}
 
   private mapToDto(user: User): UserReadDto {
@@ -26,14 +26,14 @@ export class UserPostgresReadRepository implements UserReadRepositoryPort {
       user.last_name,
       user.avatar,
       user.created_at,
-      user.password, // Included for validate password query
+      user.password // Included for validate password query
     );
   }
 
   async getUserByEmail(email: string): Promise<UserReadDto | null> {
     const res = await this.userRepository
-      .createQueryBuilder('u')
-      .where('u.email = :email', { email })
+      .createQueryBuilder("u")
+      .where("u.email = :email", { email })
       .getOne();
 
     return res ? this.mapToDto(res) : null;
@@ -41,8 +41,8 @@ export class UserPostgresReadRepository implements UserReadRepositoryPort {
 
   async getUserById(id: string): Promise<UserReadDto | null> {
     const res = await this.userRepository
-      .createQueryBuilder('u')
-      .where('u.id = :id', { id })
+      .createQueryBuilder("u")
+      .where("u.id = :id", { id })
       .getOne();
 
     return res ? this.mapToDto(res) : null;
@@ -50,22 +50,22 @@ export class UserPostgresReadRepository implements UserReadRepositoryPort {
 
   async getUserByUsername(username: string): Promise<UserReadDto | null> {
     const res = await this.userRepository
-      .createQueryBuilder('u')
-      .where('u.username = :username', { username })
+      .createQueryBuilder("u")
+      .where("u.username = :username", { username })
       .getOne();
 
     return res ? this.mapToDto(res) : null;
   }
 
   async getUserIdsByNameOrUsername(
-    nameOrUsernameFilter: string,
+    nameOrUsernameFilter: string
   ): Promise<string[]> {
     const res = await this.userRepository
-      .createQueryBuilder('u')
-      .select('u.id', 'id')
-      .where('u.first_name ILIKE :filter')
-      .orWhere('u.last_name ILIKE :filter')
-      .orWhere('u.username ILIKE :filter')
+      .createQueryBuilder("u")
+      .select("u.id", "id")
+      .where("u.first_name ILIKE :filter")
+      .orWhere("u.last_name ILIKE :filter")
+      .orWhere("u.username ILIKE :filter")
       .setParameters({
         filter: `%${nameOrUsernameFilter}%`,
       })
@@ -75,11 +75,13 @@ export class UserPostgresReadRepository implements UserReadRepositoryPort {
   }
 
   async getUsersByIds(userIds: string[]): Promise<UserReadDto[]> {
-    if (!userIds || userIds.length === 0) return [];
+    if (!userIds || userIds.length === 0) {
+      return [];
+    }
 
     const res = await this.userRepository
-      .createQueryBuilder('u')
-      .where('u.id IN (:...userIds)', { userIds })
+      .createQueryBuilder("u")
+      .where("u.id IN (:...userIds)", { userIds })
       .getMany();
 
     return res.map((u) => this.mapToDto(u));
@@ -87,9 +89,9 @@ export class UserPostgresReadRepository implements UserReadRepositoryPort {
 
   async getBlockStatus(blockerId: string, blockedId: string): Promise<boolean> {
     const res = await this.userBlockRepository
-      .createQueryBuilder('ub')
-      .where('blocker_id = :blockerId', { blockerId })
-      .andWhere('blocked_id = :blockedId', { blockedId })
+      .createQueryBuilder("ub")
+      .where("blocker_id = :blockerId", { blockerId })
+      .andWhere("blocked_id = :blockedId", { blockedId })
       .getExists();
 
     return res;
@@ -97,15 +99,15 @@ export class UserPostgresReadRepository implements UserReadRepositoryPort {
 
   async getBlockedUserIds(
     blockerId: string,
-    blockedIds?: string[],
+    blockedIds?: string[]
   ): Promise<string[]> {
     const query = this.userBlockRepository
-      .createQueryBuilder('ub')
-      .select('blocked_id', 'blockedId')
-      .where('blocker_id = :userId', { userId: blockerId }); // Fixed variable interpolation
+      .createQueryBuilder("ub")
+      .select("blocked_id", "blockedId")
+      .where("blocker_id = :userId", { userId: blockerId }); // Fixed variable interpolation
 
     if (blockedIds?.length) {
-      query.andWhere('blocked_id IN (:...blockedIds)', { blockedIds }); // Fixed s
+      query.andWhere("blocked_id IN (:...blockedIds)", { blockedIds }); // Fixed s
     }
 
     const res = await query.getRawMany<{ blockedId: string }>();

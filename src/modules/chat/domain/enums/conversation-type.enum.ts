@@ -1,3 +1,3 @@
 export enum ConversationType {
-  DIRECT = 'DIRECT',
+  DIRECT = "DIRECT",
 }

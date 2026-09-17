@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthPostgresRepository } from './auth-postgres.repository';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { DatabaseType } from '@infrastructure/database/database-type.enum';
-import { RefreshToken } from '../entities/refresh-token.entity';
-import { RefreshTokenEntity } from '@modules/auth/domain/models/refresh-token.entity';
+import { DatabaseType } from "@infrastructure/database/database-type.enum";
+import { RefreshTokenEntity } from "@modules/auth/domain/models/refresh-token.entity";
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { RefreshToken } from "../entities/refresh-token.entity";
+import { AuthPostgresRepository } from "./auth-postgres.repository";
 
-describe('AuthPostgresRepository', () => {
+describe("AuthPostgresRepository", () => {
   let repository: AuthPostgresRepository;
   let queryBuilderMock: any;
   let repoMock: any;
@@ -35,16 +35,16 @@ describe('AuthPostgresRepository', () => {
     repository = module.get<AuthPostgresRepository>(AuthPostgresRepository);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(repository).toBeDefined();
   });
 
-  describe('save', () => {
-    it('should save and return entity', async () => {
+  describe("save", () => {
+    it("should save and return entity", async () => {
       const entity = RefreshTokenEntity.create(
-        'user-1',
-        'hash',
-        new Date().toISOString(),
+        "user-1",
+        "hash",
+        new Date().toISOString()
       );
       repoMock.save.mockResolvedValue(RefreshToken.fromDomain(entity));
 
@@ -56,26 +56,26 @@ describe('AuthPostgresRepository', () => {
     });
   });
 
-  describe('getRefreshToken', () => {
-    it('should return null if not found', async () => {
+  describe("getRefreshToken", () => {
+    it("should return null if not found", async () => {
       queryBuilderMock.getOne.mockResolvedValue(null);
-      const result = await repository.getRefreshToken('id-1', 'user-1');
+      const result = await repository.getRefreshToken("id-1", "user-1");
       expect(result).toBeNull();
     });
 
-    it('should return entity if found', async () => {
+    it("should return entity if found", async () => {
       const entity = RefreshTokenEntity.create(
-        'user-1',
-        'hash',
-        new Date().toISOString(),
+        "user-1",
+        "hash",
+        new Date().toISOString()
       );
       queryBuilderMock.getOne.mockResolvedValue(
-        RefreshToken.fromDomain(entity),
+        RefreshToken.fromDomain(entity)
       );
 
       const result = await repository.getRefreshToken(
         entity.identifier,
-        'user-1',
+        "user-1"
       );
       expect(result).toBeInstanceOf(RefreshTokenEntity);
       expect(result?.identifier).toBe(entity.identifier);

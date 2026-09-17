@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserHttpController } from './user-http.controller';
-import { CommandBus } from '@nestjs/cqrs';
-import { BlockUserCommand } from '@modules/user/application/commands/block-user/block-user.command';
-import { UnblockUserCommand } from '@modules/user/application/commands/unblock-user/unblock-user.command';
-import { ConflictException } from '@nestjs/common';
-import { UserHttpGuard } from './guards/user-http.guard';
+import { BlockUserCommand } from "@modules/user/application/commands/block-user/block-user.command";
+import { UnblockUserCommand } from "@modules/user/application/commands/unblock-user/unblock-user.command";
+import { ConflictException } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import { UserHttpGuard } from "./guards/user-http.guard";
+import { UserHttpController } from "./user-http.controller";
 
-describe('UserHttpController', () => {
+describe("UserHttpController", () => {
   let controller: UserHttpController;
   let commandBus: jest.Mocked<CommandBus>;
 
@@ -31,45 +31,45 @@ describe('UserHttpController', () => {
     controller = module.get<UserHttpController>(UserHttpController);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
-  describe('block', () => {
-    it('should execute BlockUserCommand and return empty object on success', async () => {
+  describe("block", () => {
+    it("should execute BlockUserCommand and return empty object on success", async () => {
       commandBus.execute.mockResolvedValue(true);
 
       const result = await controller.block(
-        { targetUserId: 'target-1' },
-        'auth-user',
+        { targetUserId: "target-1" },
+        "auth-user"
       );
 
       expect(commandBus.execute).toHaveBeenCalledWith(
-        new BlockUserCommand('auth-user', 'target-1'),
+        new BlockUserCommand("auth-user", "target-1")
       );
       expect(result).toEqual({});
     });
 
-    it('should throw ConflictException if user is already blocked', async () => {
+    it("should throw ConflictException if user is already blocked", async () => {
       commandBus.execute.mockResolvedValue(false);
 
       await expect(
-        controller.block({ targetUserId: 'target-1' }, 'auth-user'),
+        controller.block({ targetUserId: "target-1" }, "auth-user")
       ).rejects.toThrow(ConflictException);
     });
   });
 
-  describe('unblock', () => {
-    it('should execute UnblockUserCommand and return empty object', async () => {
+  describe("unblock", () => {
+    it("should execute UnblockUserCommand and return empty object", async () => {
       commandBus.execute.mockResolvedValue(true);
 
       const result = await controller.unblock(
-        { targetUserId: 'target-1' },
-        'auth-user',
+        { targetUserId: "target-1" },
+        "auth-user"
       );
 
       expect(commandBus.execute).toHaveBeenCalledWith(
-        new UnblockUserCommand('auth-user', 'target-1'),
+        new UnblockUserCommand("auth-user", "target-1")
       );
       expect(result).toEqual({});
     });

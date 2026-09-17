@@ -1,40 +1,41 @@
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
-import { UnblockUserCommand } from './unblock-user.command';
-import { Logger } from '@nestjs/common';
-import { UserRepositoryPort } from '@modules/user/application/ports/user-repository.port';
-import { UserNotFoundException } from '@modules/user/domain/user.exceptions';
-import { UserUnblockedEvent } from '@modules/user/domain/events/user-unblocked.event';
+import { UserRepositoryPort } from "@modules/user/application/ports/user-repository.port";
+import { UserUnblockedEvent } from "@modules/user/domain/events/user-unblocked.event";
+import { UserNotFoundException } from "@modules/user/domain/user.exceptions";
+import { Logger } from "@nestjs/common";
+import { CommandHandler, EventPublisher, ICommandHandler } from "@nestjs/cqrs";
+import { UnblockUserCommand } from "./unblock-user.command";
 
 @CommandHandler(UnblockUserCommand)
-export class UnblockUserHandler implements ICommandHandler<
-  UnblockUserCommand,
-  boolean
-> {
+export class UnblockUserHandler
+  implements ICommandHandler<UnblockUserCommand, boolean>
+{
   private readonly logger = new Logger(UnblockUserHandler.name);
 
   constructor(
     private readonly userRepository: UserRepositoryPort,
-    private readonly publisher: EventPublisher,
+    private readonly publisher: EventPublisher
   ) {}
 
   async execute(command: UnblockUserCommand): Promise<boolean> {
     this.logger.debug(
-      `User ${command.unblockerId} is unblocking ${command.unblockedId}`,
+      `User ${command.unblockerId} is unblocking ${command.unblockedId}`
     );
 
     const unblockerRes = await this.userRepository.getUserById(
-      command.unblockerId,
+      command.unblockerId
     );
-    if (!unblockerRes) throw new UserNotFoundException(command.unblockerId);
+    if (!unblockerRes) {
+      throw new UserNotFoundException(command.unblockerId);
+    }
 
     const isBlocked = await this.userRepository.getBlockStatus(
       command.unblockerId,
-      command.unblockedId,
+      command.unblockedId
     );
 
     if (!isBlocked) {
       this.logger.log(
-        `User ${command.unblockedId} was not blocked by ${command.unblockerId}`,
+        `User ${command.unblockedId} was not blocked by ${command.unblockerId}`
       );
       return false;
     }
@@ -43,7 +44,7 @@ export class UnblockUserHandler implements ICommandHandler<
 
     const unblocker = this.publisher.mergeObjectContext(unblockerRes);
     unblocker.apply(
-      new UserUnblockedEvent(command.unblockerId, command.unblockedId),
+      new UserUnblockedEvent(command.unblockerId, command.unblockedId)
     );
     unblocker.commit();
 

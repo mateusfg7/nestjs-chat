@@ -1,8 +1,8 @@
-export type RefreshTokenPayload = {
-  sub: string;
-  iat: number;
-  exp: number;
+export interface RefreshTokenPayload {
   aud: string;
+  exp: number;
+  iat: number;
   iss: string;
   jti: string;
-};
+  sub: string;
+}

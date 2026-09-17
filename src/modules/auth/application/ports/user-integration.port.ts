@@ -1,15 +1,15 @@
 export interface AuthUser {
-  id: string;
-  role: string;
-  firstName?: string;
-  lastName?: string;
   createdAt: Date;
+  firstName?: string;
+  id: string;
+  lastName?: string;
+  role: string;
 }
 
 export abstract class UserIntegrationPort {
   abstract createUser(data: any): Promise<AuthUser>;
   abstract validatePassword(
     property: string,
-    password: string,
+    password: string
   ): Promise<AuthUser>;
 }

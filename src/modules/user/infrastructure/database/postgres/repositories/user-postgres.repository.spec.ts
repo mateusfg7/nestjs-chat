@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserPostgresRepository } from './user-postgres.repository';
-import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
-import { User } from '../entities/user.entity';
-import { UserBlock } from '../entities/user-block.entity';
-import { DatabaseType } from '@infrastructure/database/database-type.enum';
+import { DatabaseType } from "@infrastructure/database/database-type.enum";
+import { Test, TestingModule } from "@nestjs/testing";
+import { getDataSourceToken, getRepositoryToken } from "@nestjs/typeorm";
+import { User } from "../entities/user.entity";
+import { UserBlock } from "../entities/user-block.entity";
+import { UserPostgresRepository } from "./user-postgres.repository";
 
-describe('UserPostgresRepository', () => {
+describe("UserPostgresRepository", () => {
   let repository: UserPostgresRepository;
   let userRepositoryMock: any;
   let userBlockRepositoryMock: any;
@@ -68,105 +68,105 @@ describe('UserPostgresRepository', () => {
     repository = module.get<UserPostgresRepository>(UserPostgresRepository);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(repository).toBeDefined();
   });
 
-  describe('getUserById', () => {
-    it('should return null if user not found', async () => {
+  describe("getUserById", () => {
+    it("should return null if user not found", async () => {
       queryBuilderMock.getOne.mockResolvedValue(null);
-      const result = await repository.getUserById('id-1');
+      const result = await repository.getUserById("id-1");
       expect(result).toBeNull();
     });
   });
 
-  describe('getUserByEmail', () => {
-    it('should return null if user not found', async () => {
+  describe("getUserByEmail", () => {
+    it("should return null if user not found", async () => {
       queryBuilderMock.getOne.mockResolvedValue(null);
-      const result = await repository.getUserByEmail('test@test.com');
+      const result = await repository.getUserByEmail("test@test.com");
       expect(result).toBeNull();
     });
   });
 
-  describe('getUserByUsername', () => {
-    it('should return null if user not found', async () => {
+  describe("getUserByUsername", () => {
+    it("should return null if user not found", async () => {
       queryBuilderMock.getOne.mockResolvedValue(null);
-      const result = await repository.getUserByUsername('test');
+      const result = await repository.getUserByUsername("test");
       expect(result).toBeNull();
     });
   });
 
-  describe('userExists', () => {
-    it('should return true if user exists', async () => {
+  describe("userExists", () => {
+    it("should return true if user exists", async () => {
       queryBuilderMock.getExists.mockResolvedValue(true);
-      const result = await repository.userExists({ email: 'test@test.com' });
+      const result = await repository.userExists({ email: "test@test.com" });
       expect(result).toBe(true);
     });
   });
 
-  describe('getUserIdsByNameOrUsername', () => {
-    it('should return array of ids', async () => {
-      queryBuilderMock.getRawMany.mockResolvedValue([{ id: 'id-1' }]);
-      const result = await repository.getUserIdsByNameOrUsername('test');
-      expect(result).toEqual(['id-1']);
+  describe("getUserIdsByNameOrUsername", () => {
+    it("should return array of ids", async () => {
+      queryBuilderMock.getRawMany.mockResolvedValue([{ id: "id-1" }]);
+      const result = await repository.getUserIdsByNameOrUsername("test");
+      expect(result).toEqual(["id-1"]);
     });
   });
 
-  describe('getUsersByIds', () => {
-    it('should return empty array if no users found', async () => {
+  describe("getUsersByIds", () => {
+    it("should return empty array if no users found", async () => {
       queryBuilderMock.getMany.mockResolvedValue([]);
-      const result = await repository.getUsersByIds(['id-1']);
+      const result = await repository.getUsersByIds(["id-1"]);
       expect(result).toEqual([]);
     });
   });
 
-  describe('block', () => {
-    it('should return false if already blocked', async () => {
+  describe("block", () => {
+    it("should return false if already blocked", async () => {
       queryBuilderMock.getExists.mockResolvedValue(true);
-      const result = await repository.block('blocker', 'blocked');
+      const result = await repository.block("blocker", "blocked");
       expect(result).toBe(false);
     });
 
-    it('should insert block and return true if not blocked', async () => {
+    it("should insert block and return true if not blocked", async () => {
       queryBuilderMock.getExists.mockResolvedValue(false);
-      const result = await repository.block('blocker', 'blocked');
+      const result = await repository.block("blocker", "blocked");
       expect(userBlockRepositoryMock.insert).toHaveBeenCalled();
       expect(result).toBe(true);
     });
   });
 
-  describe('unblock', () => {
-    it('should execute soft delete and return true if affected', async () => {
+  describe("unblock", () => {
+    it("should execute soft delete and return true if affected", async () => {
       queryBuilderMock.execute.mockResolvedValue({ affected: 1 });
-      const result = await repository.unblock('blocker', 'blocked');
+      const result = await repository.unblock("blocker", "blocked");
       expect(result).toBe(true);
     });
   });
 
-  describe('getBlockStatus', () => {
-    it('should return true if blocked', async () => {
+  describe("getBlockStatus", () => {
+    it("should return true if blocked", async () => {
       queryBuilderMock.getExists.mockResolvedValue(true);
-      const result = await repository.getBlockStatus('blocker', 'blocked');
+      const result = await repository.getBlockStatus("blocker", "blocked");
       expect(result).toBe(true);
     });
   });
 
-  describe('getBlockedUserIds', () => {
-    it('should return array of blocked ids', async () => {
+  describe("getBlockedUserIds", () => {
+    it("should return array of blocked ids", async () => {
       queryBuilderMock.getRawMany.mockResolvedValue([
-        { blockedId: 'blocked-1' },
+        { blockedId: "blocked-1" },
       ]);
-      const result = await repository.getBlockedUserIds('blocker', [
-        'blocked-1',
+      const result = await repository.getBlockedUserIds("blocker", [
+        "blocked-1",
       ]);
-      expect(result).toEqual(['blocked-1']);
+      expect(result).toEqual(["blocked-1"]);
     });
   });
 
-  describe('delete', () => {
-    it('should return true if affected', async () => {
+  describe("delete", () => {
+    it("should return true if affected", async () => {
       userRepositoryMock.delete.mockResolvedValue({ affected: 1 });
-      const result = await repository.delete('id-1');
+      const result = await repository.delete("id-1");
       expect(result).toBe(true);
     });
   });

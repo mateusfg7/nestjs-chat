@@ -1,10 +1,31 @@
-import { GetUserConversationIdsQuery } from '@modules/chat/application/queries/get-user-conversation-ids/get-user-conversation-ids.query';
-import { CreateDirectConversationCommand } from '@modules/chat/application/commands/create-direct-conversation/create-direct-conversation.command';
-import { CreateMessageCommand } from '@modules/chat/application/commands/create-message/create-message.command';
-import { DeleteConversationCommand } from '@modules/chat/application/commands/delete-conversation/delete-conversation.command';
-import { GetUserConversationListQuery } from '@modules/chat/application/queries/get-user-conversation-list/get-user-conversation-list.query';
-import { GetUserConversationQuery } from '@modules/chat/application/queries/get-user-conversation/get-user-conversation.query';
-import { GetUserConversationMessageListQuery } from '@modules/chat/application/queries/get-user-conversation-message-list/get-user-conversation-message-list.query';
+import { CurrentUserId } from "@common/decorators/current-user-id.decorator";
+import { PaginationHelper } from "@common/pagination/pagination.helper";
+import { BaseWsGateway } from "@common/websocket/base-ws.gateway";
+import { GlobalWsExceptionFilter } from "@common/websocket/filters/global-ws-exception.filter";
+import { CreateDirectConversationCommand } from "@modules/chat/application/commands/create-direct-conversation/create-direct-conversation.command";
+import { CreateMessageCommand } from "@modules/chat/application/commands/create-message/create-message.command";
+import { DeleteConversationCommand } from "@modules/chat/application/commands/delete-conversation/delete-conversation.command";
+import { MarkConversationAsReadCommand } from "@modules/chat/application/commands/mark-conversation-as-read/mark-conversation-as-read.command";
+import { UserIntegrationPort } from "@modules/chat/application/ports/user-integration.port";
+import { GetUserConversationQuery } from "@modules/chat/application/queries/get-user-conversation/get-user-conversation.query";
+import { GetUserConversationIdsQuery } from "@modules/chat/application/queries/get-user-conversation-ids/get-user-conversation-ids.query";
+import { GetUserConversationListQuery } from "@modules/chat/application/queries/get-user-conversation-list/get-user-conversation-list.query";
+import { GetUserConversationMessageListQuery } from "@modules/chat/application/queries/get-user-conversation-message-list/get-user-conversation-message-list.query";
+import { MessageType } from "@modules/chat/domain/enums/chat-type.enum";
+import { ConversationType } from "@modules/chat/domain/enums/conversation-type.enum";
+import { CreateConversationRequest } from "@modules/chat/presentation/ws/dtos/create-conversation.dto";
+import { CreateMessageRequest } from "@modules/chat/presentation/ws/dtos/create-message.dto";
+import { GetConversationMessageListRequest } from "@modules/chat/presentation/ws/dtos/get-conversation-message-list.dto";
+import {
+  GetUserConversationListRequest,
+  UserConversationListItem,
+} from "@modules/chat/presentation/ws/dtos/get-user-conversation-list.dto";
+import { MarkMessageSeenRequest } from "@modules/chat/presentation/ws/dtos/mark-message-seen.dto";
+import { ConversationCreatedEvent } from "@modules/chat/presentation/ws/events/conversation-created.event";
+import { MessageSeenEvent } from "@modules/chat/presentation/ws/events/message-seen.event";
+import { ChatWsGuard } from "@modules/chat/presentation/ws/guards/chat-ws.guard";
+import { Logger, UseFilters, UseGuards } from "@nestjs/common";
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import {
   ConnectedSocket,
   MessageBody,
@@ -15,33 +36,12 @@ import {
   WebSocketGateway,
   WebSocketServer,
   WsException,
-} from '@nestjs/websockets';
-import { Logger, UseFilters, UseGuards } from '@nestjs/common';
-import { Server, Socket } from 'socket.io';
-import { ChatWsGuard } from '@modules/chat/presentation/ws/guards/chat-ws.guard';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import {
-  GetUserConversationListRequest,
-  UserConversationListItem,
-} from '@modules/chat/presentation/ws/dtos/get-user-conversation-list.dto';
-import { PaginationHelper } from '@common/pagination/pagination.helper';
-import { UserIntegrationPort } from '@modules/chat/application/ports/user-integration.port';
-import { CurrentUserId } from '@common/decorators/current-user-id.decorator';
-import { ConversationType } from '@modules/chat/domain/enums/conversation-type.enum';
-import { CreateConversationRequest } from '@modules/chat/presentation/ws/dtos/create-conversation.dto';
-import { MessageType } from '@modules/chat/domain/enums/chat-type.enum';
-import { BaseWsGateway } from '@common/websocket/base-ws.gateway';
-import { ConversationCreatedEvent } from '@modules/chat/presentation/ws/events/conversation-created.event';
-import { CreateMessageRequest } from '@modules/chat/presentation/ws/dtos/create-message.dto';
-import { MarkConversationAsReadCommand } from '@modules/chat/application/commands/mark-conversation-as-read/mark-conversation-as-read.command';
-import { GetConversationMessageListRequest } from '@modules/chat/presentation/ws/dtos/get-conversation-message-list.dto';
-import { MessageSeenEvent } from '@modules/chat/presentation/ws/events/message-seen.event';
-import { MarkMessageSeenRequest } from '@modules/chat/presentation/ws/dtos/mark-message-seen.dto';
-import { GlobalWsExceptionFilter } from '@common/websocket/filters/global-ws-exception.filter';
+} from "@nestjs/websockets";
+import { Server, Socket } from "socket.io";
 
 @UseGuards(ChatWsGuard)
 @UseFilters(new GlobalWsExceptionFilter())
-@WebSocketGateway({ namespace: 'chat', cors: '*' })
+@WebSocketGateway({ namespace: "chat", cors: "*" })
 export class ChatWsGateway
   extends BaseWsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -54,7 +54,7 @@ export class ChatWsGateway
     private readonly chatWsGuard: ChatWsGuard,
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly userIntegrationPort: UserIntegrationPort,
+    private readonly userIntegrationPort: UserIntegrationPort
   ) {
     super();
   }
@@ -64,41 +64,41 @@ export class ChatWsGateway
   }
 
   afterInit() {
-    this.logger.debug('Conversation gateway initialized successfully.');
+    this.logger.debug("Conversation gateway initialized successfully.");
   }
 
   async handleConnection(client: Socket) {
     this.logger.debug(`New client connected. id: ${client.id}`);
 
-    if (!client.data['authPromise']) {
-      client.data['authPromise'] = this.chatWsGuard.authenticateUser(client);
+    if (!client.data["authPromise"]) {
+      client.data["authPromise"] = this.chatWsGuard.authenticateUser(client);
     }
 
     try {
-      const authPayload = await client.data['authPromise'];
+      const authPayload = await client.data["authPromise"];
 
       const conversationIds = await this.queryBus.execute(
-        new GetUserConversationIdsQuery(authPayload.sub, {}),
+        new GetUserConversationIdsQuery(authPayload.sub, {})
       );
 
       this.logger.debug(
-        `Joining user ${authPayload.sub} to conversations: ${conversationIds}`,
+        `Joining user ${authPayload.sub} to conversations: ${conversationIds}`
       );
       client.join(conversationIds);
 
       const userEventsRoom = `user-${authPayload.sub}`;
       this.logger.debug(
-        `Joining user ${authPayload.sub} to room ${userEventsRoom}`,
+        `Joining user ${authPayload.sub} to room ${userEventsRoom}`
       );
       client.join(userEventsRoom);
 
       this.logger.log(`Client authorized: ${authPayload.sub}`);
-      client.emit('ready');
+      client.emit("ready");
     } catch (e) {
       this.logger.debug(
-        `Error during connection: ${(e as Error).message}. disconnecting...`,
+        `Error during connection: ${(e as Error).message}. disconnecting...`
       );
-      client.emit('error.client', (e as Error).message);
+      client.emit("error.client", (e as Error).message);
       client.disconnect(true);
     }
   }
@@ -112,11 +112,11 @@ export class ChatWsGateway
     }
   }
 
-  @SubscribeMessage('conversation.create')
+  @SubscribeMessage("conversation.create")
   async createDirectConversation(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: CreateConversationRequest,
-    @CurrentUserId() authUserId: string,
+    @CurrentUserId() authUserId: string
   ): Promise<any> {
     const [currentUser, targetUser] = await Promise.all([
       this.userIntegrationPort.getUserById(authUserId),
@@ -125,14 +125,14 @@ export class ChatWsGateway
 
     const blockStatus = await this.userIntegrationPort.getBlockStatus(
       authUserId,
-      targetUser.id,
+      targetUser.id
     );
     if (blockStatus.isBlocker) {
-      throw new WsException('You have blocked this user.');
+      throw new WsException("You have blocked this user.");
     }
 
     const createConversation = await this.commandBus.execute(
-      new CreateDirectConversationCommand(currentUser.id, data.targetUserId),
+      new CreateDirectConversationCommand(currentUser.id, data.targetUserId)
     );
 
     let createMessage;
@@ -143,12 +143,12 @@ export class ChatWsGateway
           MessageType.TEXT,
           currentUser.id,
           createConversation.id,
-          blockStatus.isBlocked ? [targetUser.id] : [],
-        ),
+          blockStatus.isBlocked ? [targetUser.id] : []
+        )
       );
     } catch (e) {
       await this.commandBus.execute(
-        new DeleteConversationCommand(createConversation.id),
+        new DeleteConversationCommand(createConversation.id)
       );
       throw e;
     }
@@ -158,10 +158,10 @@ export class ChatWsGateway
       .filter((userId) => !createMessage.deletedForUserIds.includes(userId))
       .map((userId) => `user-${userId}`);
     this.logger.debug(
-      `broadcasting 'UserChatCreated' event to the rooms: ${rooms}`,
+      `broadcasting 'UserChatCreated' event to the rooms: ${rooms}`
     );
     this.logger.log(
-      `user ${currentUser.id} joined to room ${createConversation.id}`,
+      `user ${currentUser.id} joined to room ${createConversation.id}`
     );
     await this.broadcast(
       client,
@@ -182,7 +182,7 @@ export class ChatWsGateway
             name: `${currentUser.firstName} ${currentUser.lastName}`,
           },
         },
-      }),
+      })
     );
 
     return {
@@ -204,10 +204,10 @@ export class ChatWsGateway
     };
   }
 
-  @SubscribeMessage('conversation.list')
+  @SubscribeMessage("conversation.list")
   async getUserConversationList(
     @MessageBody() data: GetUserConversationListRequest,
-    @CurrentUserId() authUserId: string,
+    @CurrentUserId() authUserId: string
   ): Promise<any> {
     const pagination = PaginationHelper.parse(data.page, data.pageSize);
 
@@ -229,17 +229,17 @@ export class ChatWsGateway
       new GetUserConversationListQuery(authUserId, {
         pagination,
         filterUserIds: filteredUserIds.filter(
-          (userId) => userId && userId !== authUserId,
+          (userId) => userId && userId !== authUserId
         ),
         withLastMessage: true,
-      }),
+      })
     );
 
     const conversationsUserIds = conversationList.data
       .map((c) => c.lastMessage?.senderId)
-      .filter((id) => id != null);
+      .filter((id) => id !== null);
     const allUsersInvolved = conversationList.data.flatMap((c) =>
-      c.members.map((m) => m.userId),
+      c.members.map((m) => m.userId)
     );
     allUsersInvolved.push(...conversationsUserIds);
     const uniqueUserIds = Array.from(new Set(allUsersInvolved)) as string[];
@@ -249,7 +249,7 @@ export class ChatWsGateway
     return {
       meta: conversationList.meta,
       data: conversationList.data.map((item) => {
-        const currentMember = item.members.find((m) => m.userId == authUserId);
+        const currentMember = item.members.find((m) => m.userId === authUserId);
         const conversation: UserConversationListItem = {
           id: item.id,
           title: item.title,
@@ -269,10 +269,10 @@ export class ChatWsGateway
 
         if (item.type === ConversationType.DIRECT) {
           const otherMember = item.members.find(
-            (cm) => cm.userId != authUserId,
+            (cm) => cm.userId !== authUserId
           );
           if (otherMember) {
-            const otherUser = users.find((u) => u.id == otherMember.userId);
+            const otherUser = users.find((u) => u.id === otherMember.userId);
             if (otherUser) {
               conversation.title = `${otherUser.firstName} ${otherUser.lastName}`;
               conversation.identifier = otherUser.username;
@@ -282,7 +282,7 @@ export class ChatWsGateway
 
           if (conversation.lastMessage) {
             const sender = users.find(
-              (user) => user.id === item.lastMessage.senderId,
+              (user) => user.id === item.lastMessage.senderId
             );
             if (sender) {
               conversation.lastMessage.user = {
@@ -299,12 +299,10 @@ export class ChatWsGateway
                 ) {
                   conversation.lastMessage.seen = true;
                 }
-              } else {
-                if (currentMember?.lastSeenMessage) {
-                  conversation.lastMessage.seen =
-                    item.lastMessage.createdAt <=
-                    currentMember.lastSeenMessage.createdAt;
-                }
+              } else if (currentMember?.lastSeenMessage) {
+                conversation.lastMessage.seen =
+                  item.lastMessage.createdAt <=
+                  currentMember.lastSeenMessage.createdAt;
               }
             }
           }
@@ -315,21 +313,21 @@ export class ChatWsGateway
     };
   }
 
-  @SubscribeMessage('conversation.message.send')
+  @SubscribeMessage("conversation.message.send")
   async createMessage(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: CreateMessageRequest,
-    @CurrentUserId() authUserId: string,
+    @CurrentUserId() authUserId: string
   ): Promise<any> {
     const conversation = await this.queryBus.execute(
-      new GetUserConversationQuery(data.conversationId, authUserId),
+      new GetUserConversationQuery(data.conversationId, authUserId)
     );
 
     const targetMember = conversation.members.find(
-      (member) => member.userId !== authUserId,
+      (member) => member.userId !== authUserId
     );
     if (!targetMember) {
-      throw new WsException('Conversation not found');
+      throw new WsException("Conversation not found");
     }
 
     const [currentUser, targetUser, blockStatus] = await Promise.all([
@@ -339,7 +337,7 @@ export class ChatWsGateway
     ]);
     if (blockStatus.isBlocker) {
       throw new WsException(
-        'You need to unblock the user before sending a message.',
+        "You need to unblock the user before sending a message."
       );
     }
 
@@ -349,8 +347,8 @@ export class ChatWsGateway
         MessageType.TEXT,
         authUserId,
         conversation.id,
-        blockStatus.isBlocked ? [targetUser.id] : [],
-      ),
+        blockStatus.isBlocked ? [targetUser.id] : []
+      )
     );
 
     return {
@@ -365,14 +363,14 @@ export class ChatWsGateway
     };
   }
 
-  @SubscribeMessage('conversation.message.list')
+  @SubscribeMessage("conversation.message.list")
   async getConversationMessageList(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: GetConversationMessageListRequest,
-    @CurrentUserId() authUserId: string,
+    @CurrentUserId() authUserId: string
   ): Promise<any> {
     const conversation = await this.queryBus.execute(
-      new GetUserConversationQuery(data.conversationId, authUserId),
+      new GetUserConversationQuery(data.conversationId, authUserId)
     );
 
     const pagination = PaginationHelper.parse(data.page, data.pageSize);
@@ -381,8 +379,8 @@ export class ChatWsGateway
       new GetUserConversationMessageListQuery(
         data.conversationId,
         authUserId,
-        pagination,
-      ),
+        pagination
+      )
     );
 
     let userIds = messageList.data.map((message) => message.senderId);
@@ -393,25 +391,25 @@ export class ChatWsGateway
 
     const blockedUserIds = await this.userIntegrationPort.getBlockedUsersIds(
       authUserId,
-      users.map((user) => user.id),
+      users.map((user) => user.id)
     );
 
     return {
       id: conversation.id,
       name:
-        conversation.type == ConversationType.DIRECT
-          ? users.find((m) => m.id != authUserId)?.firstName
+        conversation.type === ConversationType.DIRECT
+          ? users.find((m) => m.id !== authUserId)?.firstName
           : conversation.title,
       avatar:
-        conversation.type == ConversationType.DIRECT
-          ? users.find((m) => m.id != authUserId)?.avatar
+        conversation.type === ConversationType.DIRECT
+          ? users.find((m) => m.id !== authUserId)?.avatar
           : conversation.title,
       username:
-        conversation.type == ConversationType.DIRECT
-          ? users.find((m) => m.id != authUserId)?.username
+        conversation.type === ConversationType.DIRECT
+          ? users.find((m) => m.id !== authUserId)?.username
           : conversation.identifier,
       members: users
-        .filter((user) => user.id != authUserId)
+        .filter((user) => user.id !== authUserId)
         .map((m) => ({
           id: m.id,
           avatar: m.avatar,
@@ -424,7 +422,7 @@ export class ChatWsGateway
         page: messageList.meta.page,
         pageSize: messageList.meta.pageSize,
         list: messageList.data.map((item) => {
-          const user = users.find((u) => u.id == item.senderId);
+          const user = users.find((u) => u.id === item.senderId);
           const message = {
             id: item.id,
             content: item.text,
@@ -440,7 +438,7 @@ export class ChatWsGateway
 
           if (message.user?.id === authUserId) {
             const otherMember = conversation.members.find(
-              (m) => m.userId !== authUserId,
+              (m) => m.userId !== authUserId
             );
             if (
               otherMember?.lastSeenMessage?.createdAt &&
@@ -456,20 +454,20 @@ export class ChatWsGateway
     };
   }
 
-  @SubscribeMessage('conversation.message.markSeen')
+  @SubscribeMessage("conversation.message.markSeen")
   async markMessageAsSeen(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: MarkMessageSeenRequest,
-    @CurrentUserId() authUserId: string,
+    @CurrentUserId() authUserId: string
   ): Promise<void> {
     const conversation = await this.queryBus.execute(
-      new GetUserConversationQuery(data.conversationId, authUserId),
+      new GetUserConversationQuery(data.conversationId, authUserId)
     );
 
     // Verify user is a member of the conversation
     const isMember = conversation.members.some((m) => m.userId === authUserId);
     if (!isMember) {
-      throw new WsException('Conversation not found or access denied');
+      throw new WsException("Conversation not found or access denied");
     }
 
     // Execute the command to update the read status in the DB
@@ -477,8 +475,8 @@ export class ChatWsGateway
       new MarkConversationAsReadCommand(
         conversation.id,
         authUserId,
-        data.messageId,
-      ),
+        data.messageId
+      )
     );
 
     // Broadcast the event to other members of the conversation
@@ -490,7 +488,7 @@ export class ChatWsGateway
       new MessageSeenEvent({
         conversationId: conversation.id,
         messageId: data.messageId,
-      }),
+      })
     );
   }
 }

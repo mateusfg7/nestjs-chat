@@ -1,4 +1,4 @@
-import { MessageType } from '@modules/chat/domain/enums/chat-type.enum';
+import { MessageType } from "@modules/chat/domain/enums/chat-type.enum";
 
 export class CreateMessageCommand {
   constructor(
@@ -6,6 +6,6 @@ export class CreateMessageCommand {
     public readonly type: MessageType,
     public readonly senderId: string,
     public readonly conversationId: string,
-    public readonly deletedForUserIds: string[] = [],
+    public readonly deletedForUserIds: string[] = []
   ) {}
 }

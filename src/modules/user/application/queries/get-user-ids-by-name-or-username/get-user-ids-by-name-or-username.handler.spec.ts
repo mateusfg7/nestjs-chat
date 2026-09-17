@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { GetUserIdsByNameOrUsernameHandler } from './get-user-ids-by-name-or-username.handler';
-import { GetUserIdsByNameOrUsernameQuery } from './get-user-ids-by-name-or-username.query';
-import { UserReadRepositoryPort } from '@modules/user/application/ports/user-read-repository.port';
+import { UserReadRepositoryPort } from "@modules/user/application/ports/user-read-repository.port";
+import { Test, TestingModule } from "@nestjs/testing";
+import { GetUserIdsByNameOrUsernameHandler } from "./get-user-ids-by-name-or-username.handler";
+import { GetUserIdsByNameOrUsernameQuery } from "./get-user-ids-by-name-or-username.query";
 
-describe('GetUserIdsByNameOrUsernameHandler', () => {
+describe("GetUserIdsByNameOrUsernameHandler", () => {
   let handler: GetUserIdsByNameOrUsernameHandler;
   let userRepository: jest.Mocked<UserReadRepositoryPort>;
 
@@ -23,25 +23,25 @@ describe('GetUserIdsByNameOrUsernameHandler', () => {
     }).compile();
 
     handler = module.get<GetUserIdsByNameOrUsernameHandler>(
-      GetUserIdsByNameOrUsernameHandler,
+      GetUserIdsByNameOrUsernameHandler
     );
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(handler).toBeDefined();
   });
 
-  describe('execute', () => {
-    it('should return matching user ids based on the filter', async () => {
-      const query = new GetUserIdsByNameOrUsernameQuery('John');
-      const expectedIds = ['user-1', 'user-2'];
+  describe("execute", () => {
+    it("should return matching user ids based on the filter", async () => {
+      const query = new GetUserIdsByNameOrUsernameQuery("John");
+      const expectedIds = ["user-1", "user-2"];
 
       userRepository.getUserIdsByNameOrUsername.mockResolvedValue(expectedIds);
 
       const result = await handler.execute(query);
 
       expect(userRepository.getUserIdsByNameOrUsername).toHaveBeenCalledWith(
-        'John',
+        "John"
       );
       expect(result).toEqual(expectedIds);
     });

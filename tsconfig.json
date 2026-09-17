@@ -21,15 +21,9 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@common/*": [
-        "src/common/*"
-      ],
-      "@infrastructure/*": [
-        "src/infrastructure/*"
-      ],
-      "@modules/*": [
-        "src/modules/*"
-      ]
+      "@common/*": ["src/common/*"],
+      "@infrastructure/*": ["src/infrastructure/*"],
+      "@modules/*": ["src/modules/*"]
     }
   }
 }

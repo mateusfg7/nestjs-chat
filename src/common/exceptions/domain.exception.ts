@@ -1,11 +1,11 @@
 export type DomainErrorType =
-  | 'NOT_FOUND'
-  | 'CONFLICT'
-  | 'UNAUTHORIZED'
-  | 'FORBIDDEN'
-  | 'BUSINESS_RULE'
-  | 'INTERNAL_ERROR'
-  | 'TOO_MANY_REQUESTS';
+  | "NOT_FOUND"
+  | "CONFLICT"
+  | "UNAUTHORIZED"
+  | "FORBIDDEN"
+  | "BUSINESS_RULE"
+  | "INTERNAL_ERROR"
+  | "TOO_MANY_REQUESTS";
 
 export abstract class DomainException extends Error {
   public readonly code: string;
@@ -14,7 +14,7 @@ export abstract class DomainException extends Error {
   protected constructor(
     public readonly message: string,
     code: string,
-    type: DomainErrorType = 'BUSINESS_RULE',
+    type: DomainErrorType = "BUSINESS_RULE"
   ) {
     super(message);
     this.name = this.constructor.name;

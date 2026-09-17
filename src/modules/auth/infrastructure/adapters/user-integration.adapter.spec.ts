@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserIntegrationAdapter } from './user-integration.adapter';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ValidatePasswordQuery } from '@modules/user/application/queries/validate-password/validate-password.query';
-import { CreateUserCommand } from '@modules/user/application/commands/create-user/create-user.command';
+import { CreateUserCommand } from "@modules/user/application/commands/create-user/create-user.command";
+import { ValidatePasswordQuery } from "@modules/user/application/queries/validate-password/validate-password.query";
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import { UserIntegrationAdapter } from "./user-integration.adapter";
 
-describe('UserIntegrationAdapter', () => {
+describe("UserIntegrationAdapter", () => {
   let adapter: UserIntegrationAdapter;
   let commandBus: jest.Mocked<CommandBus>;
   let queryBus: jest.Mocked<QueryBus>;
@@ -24,45 +24,45 @@ describe('UserIntegrationAdapter', () => {
     adapter = module.get<UserIntegrationAdapter>(UserIntegrationAdapter);
   });
 
-  describe('validatePassword', () => {
-    it('should execute ValidatePasswordQuery and return AuthUser', async () => {
+  describe("validatePassword", () => {
+    it("should execute ValidatePasswordQuery and return AuthUser", async () => {
       queryBus.execute.mockResolvedValue({
-        id: 'user-1',
-        role: 'admin',
-        firstName: 'j',
-        lastName: 's',
+        id: "user-1",
+        role: "admin",
+        firstName: "j",
+        lastName: "s",
         createdAt: new Date(),
       });
-      const result = await adapter.validatePassword('john', 'pass');
+      const result = await adapter.validatePassword("john", "pass");
       expect(queryBus.execute).toHaveBeenCalledWith(
-        new ValidatePasswordQuery('john', 'pass'),
+        new ValidatePasswordQuery("john", "pass")
       );
-      expect(result.id).toBe('user-1');
-      expect(result.role).toBe('admin');
+      expect(result.id).toBe("user-1");
+      expect(result.role).toBe("admin");
     });
   });
 
-  describe('createUser', () => {
-    it('should execute CreateUserCommand and return AuthUser', async () => {
+  describe("createUser", () => {
+    it("should execute CreateUserCommand and return AuthUser", async () => {
       commandBus.execute.mockResolvedValue({
-        id: 'user-2',
-        role: 'user',
-        firstName: 'a',
-        lastName: 'b',
+        id: "user-2",
+        role: "user",
+        firstName: "a",
+        lastName: "b",
         createdAt: new Date(),
       });
       const result = await adapter.createUser({
-        email: 'e',
-        username: 'u',
-        password: 'p',
-        firstName: 'a',
-        lastName: 'b',
-        avatar: 'pic',
+        email: "e",
+        username: "u",
+        password: "p",
+        firstName: "a",
+        lastName: "b",
+        avatar: "pic",
       });
       expect(commandBus.execute).toHaveBeenCalledWith(
-        new CreateUserCommand('e', 'u', 'p', 'a', 'b', 'pic'),
+        new CreateUserCommand("e", "u", "p", "a", "b", "pic")
       );
-      expect(result.id).toBe('user-2');
+      expect(result.id).toBe("user-2");
     });
   });
 });

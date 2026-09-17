@@ -1,4 +1,4 @@
-import { BaseWsEvent } from '@common/websocket/base-ws-event';
+import { BaseWsEvent } from "@common/websocket/base-ws-event";
 
 export class UserUnblockedData {
   blockerId: string;
@@ -7,6 +7,6 @@ export class UserUnblockedData {
 
 export class UserUnblockedWsEvent extends BaseWsEvent<UserUnblockedData> {
   get eventName(): string {
-    return 'user.unblocked';
+    return "user.unblocked";
   }
 }

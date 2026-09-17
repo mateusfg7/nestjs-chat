@@ -1,10 +1,9 @@
-import { MessageType } from '@modules/chat/domain/enums/chat-type.enum';
-import { ConversationEntity } from '@modules/chat/domain/models/conversation.model';
-import { ConversationMemberEntity } from '@modules/chat/domain/models/conversation-member.model';
-import { v7 as uuidv7 } from 'uuid';
-
-import { AggregateRoot } from '@common/domain/aggregate-root';
-import { MessageCreatedDomainEvent } from '@modules/chat/domain/events/message-created.domain-event';
+import { AggregateRoot } from "@common/domain/aggregate-root";
+import { MessageType } from "@modules/chat/domain/enums/chat-type.enum";
+import { MessageCreatedDomainEvent } from "@modules/chat/domain/events/message-created.domain-event";
+import { ConversationEntity } from "@modules/chat/domain/models/conversation.model";
+import { ConversationMemberEntity } from "@modules/chat/domain/models/conversation-member.model";
+import { v7 as uuidv7 } from "uuid";
 
 export class MessageEntity extends AggregateRoot<string> {
   private readonly _text: string;
@@ -41,7 +40,7 @@ export class MessageEntity extends AggregateRoot<string> {
     senderId: string,
     conversationId: string,
     deletedForUserIds: string[] = [],
-    deletedAt?: Date,
+    deletedAt?: Date
   ) {
     super(id, createdAt, updatedAt);
     this._text = text;
@@ -57,7 +56,7 @@ export class MessageEntity extends AggregateRoot<string> {
     type: MessageType,
     senderId: string,
     conversationId: string,
-    deletedForUserIds: string[] = [],
+    deletedForUserIds: string[] = []
   ): MessageEntity {
     const id = uuidv7();
     const createdAt = new Date();
@@ -69,7 +68,7 @@ export class MessageEntity extends AggregateRoot<string> {
       type,
       senderId,
       conversationId,
-      deletedForUserIds,
+      deletedForUserIds
     );
 
     message.apply(
@@ -79,8 +78,8 @@ export class MessageEntity extends AggregateRoot<string> {
         senderId,
         text,
         deletedForUserIds,
-        createdAt,
-      ),
+        createdAt
+      )
     );
 
     return message;
@@ -95,7 +94,7 @@ export class MessageEntity extends AggregateRoot<string> {
     deletedForUserIds: string[],
     createdAt: Date,
     updatedAt: Date,
-    deletedAt?: Date,
+    deletedAt?: Date
   ): MessageEntity {
     return new MessageEntity(
       id,
@@ -106,7 +105,7 @@ export class MessageEntity extends AggregateRoot<string> {
       senderId,
       conversationId,
       deletedForUserIds,
-      deletedAt,
+      deletedAt
     );
   }
 

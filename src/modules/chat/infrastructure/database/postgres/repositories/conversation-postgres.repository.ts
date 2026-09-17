@@ -1,20 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { DatabaseType } from '@infrastructure/database/database-type.enum';
-import { Message } from '@modules/chat/infrastructure/database/postgres/entities/message.entity';
-import { ConversationRepositoryPort } from '@modules/chat/application/ports/conversation-repository.port';
-import { Conversation } from '@modules/chat/infrastructure/database/postgres/entities/conversation.entity';
-import { ConversationEntity } from '@modules/chat/domain/models/conversation.model';
-import { ConversationMember } from '@modules/chat/infrastructure/database/postgres/entities/conversation-member.entity';
-import { MessageEntity } from '@modules/chat/domain/models/message.entity';
-import { DeletedMessage } from '@modules/chat/infrastructure/database/postgres/entities/deleted-message.entity';
+import { DatabaseType } from "@infrastructure/database/database-type.enum";
+import { ConversationRepositoryPort } from "@modules/chat/application/ports/conversation-repository.port";
+import { ConversationEntity } from "@modules/chat/domain/models/conversation.model";
+import { MessageEntity } from "@modules/chat/domain/models/message.entity";
+import { Conversation } from "@modules/chat/infrastructure/database/postgres/entities/conversation.entity";
+import { ConversationMember } from "@modules/chat/infrastructure/database/postgres/entities/conversation-member.entity";
+import { DeletedMessage } from "@modules/chat/infrastructure/database/postgres/entities/deleted-message.entity";
+import { Message } from "@modules/chat/infrastructure/database/postgres/entities/message.entity";
+import { Injectable } from "@nestjs/common";
+import { InjectDataSource } from "@nestjs/typeorm";
+import { DataSource } from "typeorm";
 
 @Injectable()
-export class ConversationPostgresRepository implements ConversationRepositoryPort {
+export class ConversationPostgresRepository
+  implements ConversationRepositoryPort
+{
   constructor(
     @InjectDataSource(DatabaseType.POSTGRES)
-    private readonly dataSource: DataSource,
+    private readonly dataSource: DataSource
   ) {}
 
   async getConversationById(id: string): Promise<ConversationEntity | null> {
@@ -33,7 +35,7 @@ export class ConversationPostgresRepository implements ConversationRepositoryPor
   }
 
   async saveConversation(
-    conversationEntity: ConversationEntity,
+    conversationEntity: ConversationEntity
   ): Promise<ConversationEntity> {
     const res = await this.dataSource.transaction(async (entityManager) => {
       // Save Conversation
@@ -73,7 +75,7 @@ export class ConversationPostgresRepository implements ConversationRepositoryPor
             dm.user_id = userId;
             dm.message_id = message.id;
             return dm;
-          },
+          }
         );
         await entityManager.save(DeletedMessage, deletedMessages);
       }
@@ -81,8 +83,8 @@ export class ConversationPostgresRepository implements ConversationRepositoryPor
       // Update the last_message_id for all conversation members who have NOT deleted this message
       const conversationMembersToUpdate = await entityManager
         .getRepository(ConversationMember)
-        .createQueryBuilder('cm')
-        .where('cm.conversation_id = :conversationId', {
+        .createQueryBuilder("cm")
+        .where("cm.conversation_id = :conversationId", {
           conversationId: message.conversation_id,
         })
         .getMany();
@@ -118,13 +120,13 @@ export class ConversationPostgresRepository implements ConversationRepositoryPor
           .createQueryBuilder()
           .softDelete()
           .from(ConversationMember)
-          .where('conversation_id = :conversationId', { conversationId: id })
+          .where("conversation_id = :conversationId", { conversationId: id })
           .execute(),
         entityManager
           .createQueryBuilder()
           .softDelete()
           .from(Conversation)
-          .where('id = :id', { id: id })
+          .where("id = :id", { id })
           .execute(),
       ]);
 

@@ -1,3 +1,4 @@
+import { RefreshTokenEntity } from "@modules/auth/domain/models/refresh-token.entity";
 import {
   Column,
   CreateDateColumn,
@@ -6,31 +7,30 @@ import {
   Index,
   PrimaryColumn,
   UpdateDateColumn,
-} from 'typeorm';
-import { RefreshTokenEntity } from '@modules/auth/domain/models/refresh-token.entity';
+} from "typeorm";
 
-@Entity({ schema: 'auth', name: 'refresh_tokens' })
+@Entity({ schema: "auth", name: "refresh_tokens" })
 export class RefreshToken {
-  @PrimaryColumn('uuid')
+  @PrimaryColumn("uuid")
   id: string;
 
   @Column({
-    type: 'uuid',
+    type: "uuid",
   })
-  @Index('refresh_tokens_user_id_idx')
+  @Index("refresh_tokens_user_id_idx")
   user_id: string;
 
   @Column({
-    type: 'text',
-    comment: 'The hashed string of the actual token',
+    type: "text",
+    comment: "The hashed string of the actual token",
   })
   token: string;
 
   @Column({
-    type: 'varchar',
-    comment: 'A unique id to identify the jwt. usually a uuid',
+    type: "varchar",
+    comment: "A unique id to identify the jwt. usually a uuid",
   })
-  @Index('refresh_tokens_identifier_uniq', { unique: true })
+  @Index("refresh_tokens_identifier_uniq", { unique: true })
   identifier: string;
 
   @CreateDateColumn()
@@ -43,7 +43,9 @@ export class RefreshToken {
   deleted_at: Date | null;
 
   static fromDomain(entity: RefreshTokenEntity): RefreshToken {
-    if (!entity) return null;
+    if (!entity) {
+      return null;
+    }
 
     const refreshTokenEntity = new RefreshToken();
 
@@ -61,7 +63,9 @@ export class RefreshToken {
   }
 
   static toDomain(refreshToken: RefreshToken): RefreshTokenEntity {
-    if (!refreshToken) return null;
+    if (!refreshToken) {
+      return null;
+    }
 
     return new RefreshTokenEntity(
       refreshToken.id,
@@ -70,7 +74,7 @@ export class RefreshToken {
       refreshToken.user_id,
       refreshToken.token,
       refreshToken.identifier,
-      refreshToken.deleted_at,
+      refreshToken.deleted_at
     );
   }
 }

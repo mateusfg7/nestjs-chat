@@ -1,6 +1,6 @@
-import { DataSource } from 'typeorm';
-import * as dotenv from 'dotenv';
-import { postgresConfigSchema } from './postgres.config';
+import * as dotenv from "dotenv";
+import { DataSource } from "typeorm";
+import { postgresConfigSchema } from "./postgres.config";
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ const dbConfig = postgresConfigSchema.parse({
 });
 
 export const AppDataSource = new DataSource({
-  type: 'postgres',
+  type: "postgres",
   host: dbConfig.host,
   port: dbConfig.port,
   username: dbConfig.username,
@@ -31,8 +31,8 @@ export const AppDataSource = new DataSource({
     max: dbConfig.poolSize,
     application_name: dbConfig.applicationName,
   },
-  entities: ['dist/**/*.entity{.ts,.js}'],
-  migrations: ['dist/modules/*/infrastructure/database/**/migrations/**/*.js'],
+  entities: ["dist/**/*.entity{.ts,.js}"],
+  migrations: ["dist/modules/*/infrastructure/database/**/migrations/**/*.js"],
   synchronize: false,
   logging: dbConfig.log,
 });

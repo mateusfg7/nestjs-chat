@@ -1,36 +1,36 @@
-import { GetUserConversationIdsOptions } from '@modules/chat/application/ports/options/get-user-conversation-ids.options';
-import { GetUserConversationListOptions } from '@modules/chat/application/ports/options/get-user-conversation-list.options';
 import {
   PaginatedResult,
   PaginationOptions,
-} from '@common/pagination/pagination.interface';
-import { ConversationReadDto } from '@modules/chat/application/dtos/conversation-read.dto';
-import { MessageReadDto } from '@modules/chat/application/dtos/message-read.dto';
+} from "@common/pagination/pagination.interface";
+import { ConversationReadDto } from "@modules/chat/application/dtos/conversation-read.dto";
+import { MessageReadDto } from "@modules/chat/application/dtos/message-read.dto";
+import { GetUserConversationIdsOptions } from "@modules/chat/application/ports/options/get-user-conversation-ids.options";
+import { GetUserConversationListOptions } from "@modules/chat/application/ports/options/get-user-conversation-list.options";
 
 export abstract class ConversationReadRepositoryPort {
   abstract getUserConversationById(
     conversationId: string,
-    userId: string,
+    userId: string
   ): Promise<ConversationReadDto | null>;
 
   abstract conversationExists(
     userId: string,
-    targetUserId: string,
+    targetUserId: string
   ): Promise<boolean>;
 
   abstract getUserConversationList(
     userId: string,
-    options: GetUserConversationListOptions,
+    options: GetUserConversationListOptions
   ): Promise<PaginatedResult<ConversationReadDto>>;
 
   abstract getUserConversationIds(
     userId: string,
-    options: GetUserConversationIdsOptions,
+    options: GetUserConversationIdsOptions
   ): Promise<string[]>;
 
   abstract getUserConversationMessageList(
     conversationId: string,
     userId: string,
-    pagination: PaginationOptions,
+    pagination: PaginationOptions
   ): Promise<PaginatedResult<MessageReadDto>>;
 }

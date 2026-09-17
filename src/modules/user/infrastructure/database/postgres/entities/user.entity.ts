@@ -1,3 +1,6 @@
+import { UserRole } from "@modules/user/domain/enums/user-role.enum";
+import { UserEntity } from "@modules/user/domain/models/user.model";
+import { UserBlock } from "@modules/user/infrastructure/database/postgres/entities/user-block.entity";
 import {
   Column,
   CreateDateColumn,
@@ -7,58 +10,64 @@ import {
   OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
-} from 'typeorm';
-import { UserRole } from '@modules/user/domain/enums/user-role.enum';
-import { UserEntity } from '@modules/user/domain/models/user.model';
-import { UserBlock } from '@modules/user/infrastructure/database/postgres/entities/user-block.entity';
+} from "typeorm";
 
-@Entity({ schema: 'user', name: 'users' })
+@Entity({ schema: "user", name: "users" })
 export class User {
-  @PrimaryColumn('uuid')
+  @PrimaryColumn("uuid")
   id: string;
 
-  @Column({ type: 'varchar', length: 150 })
-  @Index('users_email_uniq', { unique: true })
+  @Column({ type: "varchar", length: 150 })
+  @Index("users_email_uniq", { unique: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 40 })
-  @Index('users_username_uniq', { unique: true })
+  @Column({ type: "varchar", length: 40 })
+  @Index("users_username_uniq", { unique: true })
   username: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: "varchar", length: 255 })
   password: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: "varchar", length: 100, nullable: true })
   first_name: string | null;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: "varchar", length: 100, nullable: true })
   last_name: string | null;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  @Column({ type: "enum", enum: UserRole, default: UserRole.USER })
   role: UserRole;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: "varchar", length: 255, nullable: true })
   avatar: string | null;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: "timestamp" })
   created_at: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: "timestamp" })
   updated_at: Date;
 
-  @DeleteDateColumn({ type: 'timestamp' })
+  @DeleteDateColumn({ type: "timestamp" })
   deleted_at: Date | null;
 
   // The users I have blocked (I am the blocker)
-  @OneToMany(() => UserBlock, (ub) => ub.blocker, { cascade: true })
+  @OneToMany(
+    () => UserBlock,
+    (ub) => ub.blocker,
+    { cascade: true }
+  )
   blockedUsers: UserBlock[];
 
   // The users who have blocked me (I am the blocked)
-  @OneToMany(() => UserBlock, (ub) => ub.blocked)
+  @OneToMany(
+    () => UserBlock,
+    (ub) => ub.blocked
+  )
   blockerUsers: UserBlock[];
 
   static toOrm(userEntity: UserEntity): User {
-    if (!userEntity) return null;
+    if (!userEntity) {
+      return null;
+    }
 
     const user = new User();
 
@@ -93,7 +102,9 @@ export class User {
   }
 
   static toEntity(user: User): UserEntity {
-    if (!user) return null;
+    if (!user) {
+      return null;
+    }
 
     return new UserEntity(
       user.id,
@@ -107,7 +118,7 @@ export class User {
       user.role,
       user.avatar,
       [], // blockedUsers
-      user.deleted_at,
+      user.deleted_at
     );
   }
 }

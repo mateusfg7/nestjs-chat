@@ -1,4 +1,4 @@
-import { AggregateRoot as CqrsAggregateRoot } from '@nestjs/cqrs';
+import { AggregateRoot as CqrsAggregateRoot } from "@nestjs/cqrs";
 
 export abstract class AggregateRoot<TId> extends CqrsAggregateRoot {
   private _updatedAt: Date;
@@ -6,7 +6,7 @@ export abstract class AggregateRoot<TId> extends CqrsAggregateRoot {
   protected constructor(
     public readonly id: TId,
     public readonly createdAt: Date,
-    updatedAt: Date,
+    updatedAt: Date
   ) {
     super();
     this._updatedAt = updatedAt;
@@ -21,7 +21,7 @@ export abstract class AggregateRoot<TId> extends CqrsAggregateRoot {
   }
 
   public equals(object?: AggregateRoot<TId>): boolean {
-    if (object == null) {
+    if (object === null) {
       return false;
     }
 

@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigType } from '@nestjs/config';
-import { redisConfig } from '@infrastructure/redis/redis.config';
-import { RedisProvider } from '@infrastructure/redis/redis.provider';
-import { RedisClient } from '@infrastructure/redis/redis.client';
+import { RedisClient } from "@infrastructure/redis/redis.client";
+import { redisConfig } from "@infrastructure/redis/redis.config";
+import { RedisProvider } from "@infrastructure/redis/redis.provider";
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigType } from "@nestjs/config";
 
 @Module({
   imports: [ConfigModule.forFeature(redisConfig)],

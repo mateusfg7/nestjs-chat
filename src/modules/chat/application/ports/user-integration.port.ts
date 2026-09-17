@@ -1,14 +1,14 @@
 export interface ChatUser {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
   avatar: string;
+  firstName: string;
+  id: string;
+  lastName: string;
+  username: string;
 }
 
 export interface BlockStatus {
-  isBlocker: boolean;
   isBlocked: boolean;
+  isBlocker: boolean;
 }
 
 export abstract class UserIntegrationPort {
@@ -19,10 +19,10 @@ export abstract class UserIntegrationPort {
   abstract getUserIdsByNameOrUsername(filter: string): Promise<string[]>;
   abstract getBlockedUsersIds(
     userId: string,
-    targetUserIds: string[],
+    targetUserIds: string[]
   ): Promise<string[]>;
   abstract getBlockStatus(
     userId: string,
-    targetUserId: string,
+    targetUserId: string
   ): Promise<BlockStatus>;
 }

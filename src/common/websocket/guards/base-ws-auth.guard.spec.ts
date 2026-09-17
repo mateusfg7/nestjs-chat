@@ -1,33 +1,33 @@
-import { BaseWsAuthGuard } from './base-ws-auth.guard';
-import { Socket } from 'socket.io';
-import { WsException } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { Logger } from "@nestjs/common";
+import { WsException } from "@nestjs/websockets";
+import { Socket } from "socket.io";
+import { BaseWsAuthGuard } from "./base-ws-auth.guard";
 
 class TestWsGuard extends BaseWsAuthGuard {
-  protected readonly logger = new Logger('TestWsGuard');
-  protected verifyToken = jest.fn().mockResolvedValue({ sub: 'user-1' });
+  protected readonly logger = new Logger("TestWsGuard");
+  protected verifyToken = jest.fn().mockResolvedValue({ sub: "user-1" });
 
   async authenticateUser(client: Socket): Promise<any> {
-    if (client.handshake.auth.token === 'valid') {
-      return { sub: 'user-1' };
+    if (client.handshake.auth.token === "valid") {
+      return { sub: "user-1" };
     }
-    throw new WsException('auth failed');
+    throw new WsException("auth failed");
   }
 }
 
-describe('BaseWsAuthGuard', () => {
+describe("BaseWsAuthGuard", () => {
   let guard: TestWsGuard;
 
   beforeEach(() => {
     guard = new TestWsGuard();
   });
 
-  describe('canActivate', () => {
-    it('should return true if client data has authPromise resolving successfully', async () => {
+  describe("canActivate", () => {
+    it("should return true if client data has authPromise resolving successfully", async () => {
       const context = {
         switchToWs: () => ({
           getClient: () => ({
-            data: { authPromise: Promise.resolve({ sub: 'user-1' }) },
+            data: { authPromise: Promise.resolve({ sub: "user-1" }) },
           }),
           getData: () => ({}),
         }),
@@ -38,9 +38,9 @@ describe('BaseWsAuthGuard', () => {
       expect(result).toBe(true);
     });
 
-    it('should call authenticateUser if authPromise is absent and return true', async () => {
+    it("should call authenticateUser if authPromise is absent and return true", async () => {
       const client = {
-        handshake: { auth: { token: 'valid' } },
+        handshake: { auth: { token: "valid" } },
         data: {},
       };
       const context = {
@@ -53,14 +53,14 @@ describe('BaseWsAuthGuard', () => {
 
       const result = await guard.canActivate(context);
       expect(result).toBe(true);
-      expect(client.data['authPromise']).toBeDefined();
+      expect(client.data["authPromise"]).toBeDefined();
     });
 
-    it('should throw WsException if authentication fails', async () => {
+    it("should throw WsException if authentication fails", async () => {
       const context = {
         switchToWs: () => ({
           getClient: () => ({
-            handshake: { auth: { token: 'invalid' } },
+            handshake: { auth: { token: "invalid" } },
             data: {},
           }),
           getData: () => ({}),

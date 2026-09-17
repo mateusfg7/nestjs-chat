@@ -1,33 +1,33 @@
-import { ConversationMemberEntity } from './conversation-member.model';
-import { ConversationEntity } from './conversation.model';
-import { MessageEntity } from './message.entity';
+import { ConversationEntity } from "./conversation.model";
+import { ConversationMemberEntity } from "./conversation-member.model";
+import { MessageEntity } from "./message.entity";
 
-describe('ConversationMemberEntity', () => {
-  it('should create correctly', () => {
-    const member = ConversationMemberEntity.create('user-1', 'conv-1');
+describe("ConversationMemberEntity", () => {
+  it("should create correctly", () => {
+    const member = ConversationMemberEntity.create("user-1", "conv-1");
     expect(member.id).toBeDefined();
-    expect(member.userId).toBe('user-1');
-    expect(member.conversationId).toBe('conv-1');
+    expect(member.userId).toBe("user-1");
+    expect(member.conversationId).toBe("conv-1");
   });
 
-  it('should reconstruct correctly', () => {
+  it("should reconstruct correctly", () => {
     const date = new Date();
     const member = ConversationMemberEntity.reconstruct(
-      'id-1',
-      'user-1',
-      'conv-1',
-      'msg-1',
-      'msg-2',
+      "id-1",
+      "user-1",
+      "conv-1",
+      "msg-1",
+      "msg-2",
       date,
-      date,
+      date
     );
-    expect(member.id).toBe('id-1');
-    expect(member.lastSeenMessageId).toBe('msg-1');
-    expect(member.lastMessageId).toBe('msg-2');
+    expect(member.id).toBe("id-1");
+    expect(member.lastSeenMessageId).toBe("msg-1");
+    expect(member.lastMessageId).toBe("msg-2");
   });
 
-  it('should load properties correctly', () => {
-    const member = ConversationMemberEntity.create('u-1', 'c-1');
+  it("should load properties correctly", () => {
+    const member = ConversationMemberEntity.create("u-1", "c-1");
     const conv = {} as Partial<ConversationEntity>;
     const msg = {} as Partial<MessageEntity>;
 
@@ -42,13 +42,13 @@ describe('ConversationMemberEntity', () => {
     expect(member.notSeenCount).toBe(5);
   });
 
-  it('should update and soft delete', () => {
-    const member = ConversationMemberEntity.create('u-1', 'c-1');
-    member.updateLastSeenMessage('new-seen');
-    expect(member.lastSeenMessageId).toBe('new-seen');
+  it("should update and soft delete", () => {
+    const member = ConversationMemberEntity.create("u-1", "c-1");
+    member.updateLastSeenMessage("new-seen");
+    expect(member.lastSeenMessageId).toBe("new-seen");
 
-    member.updateLastMessage('new-last');
-    expect(member.lastMessageId).toBe('new-last');
+    member.updateLastMessage("new-last");
+    expect(member.lastMessageId).toBe("new-last");
 
     member.softDelete();
     expect(member.deletedAt).toBeDefined();

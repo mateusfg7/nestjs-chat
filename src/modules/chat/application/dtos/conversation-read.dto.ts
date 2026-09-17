@@ -1,21 +1,21 @@
-import { MessageReadDto } from '@modules/chat/application/dtos/message-read.dto';
+import { MessageReadDto } from "@modules/chat/application/dtos/message-read.dto";
 
 export interface ConversationMemberReadDto {
   id: string;
-  userId: string;
-  lastSeenMessageId: string | null;
   lastMessageId: string | null;
+  lastSeenMessageId: string | null;
+  userId: string;
 }
 
 export interface ConversationReadDto {
-  id: string;
-  type: string;
-  identifier: string | null;
-  title: string | null;
-  picture: string | null;
   createdAt: string;
-  updatedAt: string;
-  members: ConversationMemberReadDto[];
+  id: string;
+  identifier: string | null;
   lastMessage: MessageReadDto | null;
+  members: ConversationMemberReadDto[];
   notSeenCount: number;
+  picture: string | null;
+  title: string | null;
+  type: string;
+  updatedAt: string;
 }

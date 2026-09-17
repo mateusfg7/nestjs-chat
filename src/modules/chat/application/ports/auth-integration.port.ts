@@ -1,7 +1,7 @@
 export interface ValidatedTokenPayload {
-  sub: string;
-  role: string;
   exp?: number;
+  role: string;
+  sub: string;
 }
 
 export abstract class AuthIntegrationPort {

@@ -1,7 +1,7 @@
-import { IsInt, IsNotEmpty, IsNumberString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumberString } from "class-validator";
 
 export class GetConversationMessageListRequest {
-  @IsNotEmpty({ message: 'ConversationId should not be empty' })
+  @IsNotEmpty({ message: "ConversationId should not be empty" })
   @IsNumberString()
   conversationId: string;
 

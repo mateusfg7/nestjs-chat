@@ -1,20 +1,20 @@
-import { IsInt, IsNotEmpty, IsNumberString, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumberString, IsString } from "class-validator";
 
 export class GetUserConversationListRequest {
   @IsNotEmpty()
-  @IsNumberString({}, { message: 'userId should be a number string' })
+  @IsNumberString({}, { message: "userId should be a number string" })
   targetUserId: string;
 
   @IsNotEmpty()
-  @IsString({ message: 'filter should be a string' })
+  @IsString({ message: "filter should be a string" })
   filter: string;
 
   @IsNotEmpty()
-  @IsInt({ message: 'page should be an int' })
+  @IsInt({ message: "page should be an int" })
   page: number;
 
   @IsNotEmpty()
-  @IsInt({ message: 'pageSize should be an int' })
+  @IsInt({ message: "pageSize should be an int" })
   pageSize: number;
 }
 

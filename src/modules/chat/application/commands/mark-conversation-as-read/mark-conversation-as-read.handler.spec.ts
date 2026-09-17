@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MarkConversationAsReadCommandHandler } from './mark-conversation-as-read.handler';
-import { ConversationRepositoryPort } from '@modules/chat/application/ports/conversation-repository.port';
-import { EventPublisher } from '@nestjs/cqrs';
-import { MarkConversationAsReadCommand } from './mark-conversation-as-read.command';
-import { ConversationNotFoundException } from '@modules/chat/domain/chat.exceptions';
-import { ConversationEntity } from '@modules/chat/domain/models/conversation.model';
+import { ConversationRepositoryPort } from "@modules/chat/application/ports/conversation-repository.port";
+import { ConversationNotFoundException } from "@modules/chat/domain/chat.exceptions";
+import { ConversationEntity } from "@modules/chat/domain/models/conversation.model";
+import { EventPublisher } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import { MarkConversationAsReadCommand } from "./mark-conversation-as-read.command";
+import { MarkConversationAsReadCommandHandler } from "./mark-conversation-as-read.handler";
 
-describe('MarkConversationAsReadCommandHandler', () => {
+describe("MarkConversationAsReadCommandHandler", () => {
   let handler: MarkConversationAsReadCommandHandler;
   let commandRepo: jest.Mocked<ConversationRepositoryPort>;
   let publisher: jest.Mocked<EventPublisher>;
@@ -33,25 +33,25 @@ describe('MarkConversationAsReadCommandHandler', () => {
     }).compile();
 
     handler = module.get<MarkConversationAsReadCommandHandler>(
-      MarkConversationAsReadCommandHandler,
+      MarkConversationAsReadCommandHandler
     );
   });
 
-  it('should throw ConversationNotFoundException if conversation does not exist', async () => {
+  it("should throw ConversationNotFoundException if conversation does not exist", async () => {
     commandRepo.getConversationById.mockResolvedValue(null);
     const command = new MarkConversationAsReadCommand(
-      'conv-1',
-      'user-1',
-      'msg-1',
+      "conv-1",
+      "user-1",
+      "msg-1"
     );
 
     await expect(handler.execute(command)).rejects.toThrow(
-      ConversationNotFoundException,
+      ConversationNotFoundException
     );
   });
 
-  it('should successfully mark conversation as read', async () => {
-    const conversation = ConversationEntity.createDirect('user-1', 'user-2');
+  it("should successfully mark conversation as read", async () => {
+    const conversation = ConversationEntity.createDirect("user-1", "user-2");
     conversation.markAsRead = jest.fn();
 
     commandRepo.getConversationById.mockResolvedValue(conversation);
@@ -59,12 +59,12 @@ describe('MarkConversationAsReadCommandHandler', () => {
 
     const command = new MarkConversationAsReadCommand(
       conversation.id,
-      'user-1',
-      'msg-1',
+      "user-1",
+      "msg-1"
     );
     await handler.execute(command);
 
-    expect(conversation.markAsRead).toHaveBeenCalledWith('user-1', 'msg-1');
+    expect(conversation.markAsRead).toHaveBeenCalledWith("user-1", "msg-1");
     expect(commandRepo.saveConversation).toHaveBeenCalledWith(conversation);
     expect(publisher.mergeObjectContext).toHaveBeenCalledWith(conversation);
     expect((conversation as any).commit).toHaveBeenCalled();

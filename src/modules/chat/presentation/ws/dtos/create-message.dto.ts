@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumberString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsNumberString, MinLength } from "class-validator";
 
 export class CreateMessageRequest {
   @IsNotEmpty()

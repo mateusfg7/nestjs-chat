@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CreateMessageHandler } from './create-message.handler';
-import { ConversationRepositoryPort } from '@modules/chat/application/ports/conversation-repository.port';
-import { EventPublisher } from '@nestjs/cqrs';
-import { CreateMessageCommand } from './create-message.command';
-import { MessageType } from '@modules/chat/domain/enums/chat-type.enum';
-import { MessageEntity } from '@modules/chat/domain/models/message.entity';
+import { ConversationRepositoryPort } from "@modules/chat/application/ports/conversation-repository.port";
+import { MessageType } from "@modules/chat/domain/enums/chat-type.enum";
+import { MessageEntity } from "@modules/chat/domain/models/message.entity";
+import { EventPublisher } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import { CreateMessageCommand } from "./create-message.command";
+import { CreateMessageHandler } from "./create-message.handler";
 
-describe('CreateMessageHandler', () => {
+describe("CreateMessageHandler", () => {
   let handler: CreateMessageHandler;
   let commandRepo: jest.Mocked<ConversationRepositoryPort>;
   let publisher: jest.Mocked<EventPublisher>;
@@ -37,27 +37,27 @@ describe('CreateMessageHandler', () => {
     handler = module.get<CreateMessageHandler>(CreateMessageHandler);
   });
 
-  it('should successfully create and save a message', async () => {
+  it("should successfully create and save a message", async () => {
     const command = new CreateMessageCommand(
-      'Hello!',
+      "Hello!",
       MessageType.TEXT,
-      'sender-1',
-      'conv-1',
-      [],
+      "sender-1",
+      "conv-1",
+      []
     );
 
     commandRepo.saveMessage.mockImplementation(async (msg) => msg);
     commandRepo.getConversationById.mockResolvedValue({
-      id: 'conv-1',
-      members: [{ id: 'member-1', userId: 'sender-1' }],
+      id: "conv-1",
+      members: [{ id: "member-1", userId: "sender-1" }],
     } as any);
 
     const result = await handler.execute(command);
 
     expect(result).toBeInstanceOf(MessageEntity);
-    expect(result.text).toBe('Hello!');
-    expect(result.senderId).toBe('member-1');
-    expect(result.conversationId).toBe('conv-1');
+    expect(result.text).toBe("Hello!");
+    expect(result.senderId).toBe("member-1");
+    expect(result.conversationId).toBe("conv-1");
     expect(commandRepo.saveMessage).toHaveBeenCalledWith(result);
     expect(publisher.mergeObjectContext).toHaveBeenCalledWith(result);
     expect((result as any).commit).toHaveBeenCalled();

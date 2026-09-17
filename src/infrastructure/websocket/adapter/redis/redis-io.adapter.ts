@@ -1,9 +1,9 @@
-import { IoAdapter } from '@nestjs/platform-socket.io';
-import { createAdapter } from '@socket.io/redis-adapter';
-import { INestApplication, Logger } from '@nestjs/common';
-import { wsConfig } from '@infrastructure/websocket/ws.config';
-import { ConfigType } from '@nestjs/config';
-import { RedisProvider } from '@infrastructure/redis/redis.provider';
+import { RedisProvider } from "@infrastructure/redis/redis.provider";
+import { wsConfig } from "@infrastructure/websocket/ws.config";
+import { INestApplication, Logger } from "@nestjs/common";
+import { ConfigType } from "@nestjs/config";
+import { IoAdapter } from "@nestjs/platform-socket.io";
+import { createAdapter } from "@socket.io/redis-adapter";
 
 export class RedisIoAdapter extends IoAdapter {
   private readonly logger = new Logger(RedisIoAdapter.name);
@@ -12,7 +12,7 @@ export class RedisIoAdapter extends IoAdapter {
   constructor(
     private readonly socketConfig: ConfigType<typeof wsConfig>,
     readonly app: INestApplication,
-    private readonly redisProvider: RedisProvider,
+    private readonly redisProvider: RedisProvider
   ) {
     super(app);
   }
@@ -32,11 +32,11 @@ export class RedisIoAdapter extends IoAdapter {
 
     if (this.adapterConstructor) {
       server.adapter(this.adapterConstructor);
-      this.logger.log('Redis adapter applied to Socket.IO server');
+      this.logger.log("Redis adapter applied to Socket.IO server");
     }
 
     this.logger.log(
-      `Socket.IO server successfully created on port ${socketPort}`,
+      `Socket.IO server successfully created on port ${socketPort}`
     );
     return server;
   }

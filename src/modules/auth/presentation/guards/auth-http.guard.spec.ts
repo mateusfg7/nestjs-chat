@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthHttpGuard } from './auth-http.guard';
-import { QueryBus } from '@nestjs/cqrs';
-import { VerifyAccessTokenQuery } from '@modules/auth/application/queries/verify-access-token/verify-access-token.query';
+import { VerifyAccessTokenQuery } from "@modules/auth/application/queries/verify-access-token/verify-access-token.query";
+import { QueryBus } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import { AuthHttpGuard } from "./auth-http.guard";
 
-describe('AuthHttpGuard', () => {
+describe("AuthHttpGuard", () => {
   let guard: AuthHttpGuard;
   let queryBus: jest.Mocked<QueryBus>;
 
@@ -25,35 +25,35 @@ describe('AuthHttpGuard', () => {
     guard = module.get<AuthHttpGuard>(AuthHttpGuard);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(guard).toBeDefined();
   });
 
-  describe('verifyToken', () => {
-    it('should execute VerifyAccessTokenQuery', async () => {
-      const payload = { sub: 'user-1' };
+  describe("verifyToken", () => {
+    it("should execute VerifyAccessTokenQuery", async () => {
+      const payload = { sub: "user-1" };
       queryBus.execute.mockResolvedValue(payload);
 
-      const result = await (guard as any).verifyToken('valid-token');
+      const result = await (guard as any).verifyToken("valid-token");
 
       expect(queryBus.execute).toHaveBeenCalledWith(
-        new VerifyAccessTokenQuery('valid-token'),
+        new VerifyAccessTokenQuery("valid-token")
       );
       expect(result).toEqual(payload);
     });
   });
 
-  describe('canActivate', () => {
-    it('should call super.canActivate', async () => {
+  describe("canActivate", () => {
+    it("should call super.canActivate", async () => {
       const context = {
         switchToHttp: () => ({
           getRequest: () => ({
-            headers: { authorization: 'Bearer valid-token' },
+            headers: { authorization: "Bearer valid-token" },
           }),
         }),
       } as any;
 
-      queryBus.execute.mockResolvedValue({ sub: 'user-1' });
+      queryBus.execute.mockResolvedValue({ sub: "user-1" });
 
       const result = await guard.canActivate(context);
 

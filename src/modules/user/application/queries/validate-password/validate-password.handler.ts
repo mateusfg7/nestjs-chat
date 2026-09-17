@@ -1,18 +1,16 @@
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { ValidatePasswordQuery } from './validate-password.query';
-import { Logger } from '@nestjs/common';
-import { UserReadRepositoryPort } from '@modules/user/application/ports/user-read-repository.port';
-
-import { UserReadDto } from '@modules/user/application/dtos/user-read.dto';
-import validator from 'validator';
-import * as bcrypt from 'bcrypt';
-import { InvalidCredentialsException } from '@modules/user/domain/user.exceptions';
+import { UserReadDto } from "@modules/user/application/dtos/user-read.dto";
+import { UserReadRepositoryPort } from "@modules/user/application/ports/user-read-repository.port";
+import { InvalidCredentialsException } from "@modules/user/domain/user.exceptions";
+import { Logger } from "@nestjs/common";
+import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
+import * as bcrypt from "bcrypt";
+import validator from "validator";
+import { ValidatePasswordQuery } from "./validate-password.query";
 
 @QueryHandler(ValidatePasswordQuery)
-export class ValidatePasswordHandler implements IQueryHandler<
-  ValidatePasswordQuery,
-  UserReadDto
-> {
+export class ValidatePasswordHandler
+  implements IQueryHandler<ValidatePasswordQuery, UserReadDto>
+{
   private readonly logger = new Logger(ValidatePasswordHandler.name);
 
   constructor(private readonly userRepository: UserReadRepositoryPort) {}
@@ -34,7 +32,7 @@ export class ValidatePasswordHandler implements IQueryHandler<
 
     const passwordMatches = await bcrypt.compare(
       query.password,
-      userRes.password,
+      userRes.password
     );
 
     if (!passwordMatches) {

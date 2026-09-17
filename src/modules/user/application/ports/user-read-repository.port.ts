@@ -1,4 +1,4 @@
-import { UserReadDto } from '@modules/user/application/dtos/user-read.dto';
+import { UserReadDto } from "@modules/user/application/dtos/user-read.dto";
 
 export abstract class UserReadRepositoryPort {
   abstract getUserById(id: string): Promise<UserReadDto | null>;
@@ -6,14 +6,14 @@ export abstract class UserReadRepositoryPort {
   abstract getUserByEmail(email: string): Promise<UserReadDto | null>;
   abstract getUserByUsername(username: string): Promise<UserReadDto | null>;
   abstract getUserIdsByNameOrUsername(
-    nameOrUsernameFilter: string,
+    nameOrUsernameFilter: string
   ): Promise<string[]>;
   abstract getBlockStatus(
     userId: string,
-    targetUserId: string,
+    targetUserId: string
   ): Promise<boolean>;
   abstract getBlockedUserIds(
     userId: string,
-    targetUserIds: string[],
+    targetUserIds: string[]
   ): Promise<string[]>;
 }

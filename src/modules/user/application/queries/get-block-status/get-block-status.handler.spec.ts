@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { GetBlockStatusHandler } from './get-block-status.handler';
-import { GetBlockStatusQuery } from './get-block-status.query';
-import { UserReadRepositoryPort } from '@modules/user/application/ports/user-read-repository.port';
+import { UserReadRepositoryPort } from "@modules/user/application/ports/user-read-repository.port";
+import { Test, TestingModule } from "@nestjs/testing";
+import { GetBlockStatusHandler } from "./get-block-status.handler";
+import { GetBlockStatusQuery } from "./get-block-status.query";
 
-describe('GetBlockStatusHandler', () => {
+describe("GetBlockStatusHandler", () => {
   let handler: GetBlockStatusHandler;
   let userRepository: jest.Mocked<UserReadRepositoryPort>;
 
@@ -25,13 +25,13 @@ describe('GetBlockStatusHandler', () => {
     handler = module.get<GetBlockStatusHandler>(GetBlockStatusHandler);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(handler).toBeDefined();
   });
 
-  describe('execute', () => {
-    it('should return the block status between two users', async () => {
-      const query = new GetBlockStatusQuery('user-1', 'user-2');
+  describe("execute", () => {
+    it("should return the block status between two users", async () => {
+      const query = new GetBlockStatusQuery("user-1", "user-2");
 
       // First call (user-1 blocking user-2) -> true
       // Second call (user-2 blocking user-1) -> false
@@ -43,13 +43,13 @@ describe('GetBlockStatusHandler', () => {
       expect(userRepository.getBlockStatus).toHaveBeenCalledTimes(2);
       expect(userRepository.getBlockStatus).toHaveBeenNthCalledWith(
         1,
-        'user-1',
-        'user-2',
+        "user-1",
+        "user-2"
       );
       expect(userRepository.getBlockStatus).toHaveBeenNthCalledWith(
         2,
-        'user-2',
-        'user-1',
+        "user-2",
+        "user-1"
       );
       expect(result).toEqual({
         isBlocker: true,

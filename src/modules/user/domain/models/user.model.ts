@@ -1,17 +1,17 @@
-import { AggregateRoot } from '@common/domain/aggregate-root';
-import { UserRole } from '@modules/user/domain/enums/user-role.enum';
-import { UserCreatedEvent } from '@modules/user/domain/events/user-created.event';
-import { UserBlockedEvent } from '@modules/user/domain/events/user-blocked.event';
-import { UserUnblockedEvent } from '@modules/user/domain/events/user-unblocked.event';
-import { v7 as uuidv7 } from 'uuid';
+import { AggregateRoot } from "@common/domain/aggregate-root";
+import { UserRole } from "@modules/user/domain/enums/user-role.enum";
+import { UserBlockedEvent } from "@modules/user/domain/events/user-blocked.event";
+import { UserCreatedEvent } from "@modules/user/domain/events/user-created.event";
+import { UserUnblockedEvent } from "@modules/user/domain/events/user-unblocked.event";
+import { v7 as uuidv7 } from "uuid";
 
 export class UserEntity extends AggregateRoot<string> {
-  private _email: string;
-  private _username: string;
+  private readonly _email: string;
+  private readonly _username: string;
   private _password: string;
   private _firstName: string;
   private _lastName: string;
-  private _role: UserRole;
+  private readonly _role: UserRole;
   private _avatar: string | null;
   private _blockedUsers: Partial<UserEntity>[];
   private _deletedAt: Date | null;
@@ -28,22 +28,22 @@ export class UserEntity extends AggregateRoot<string> {
     role?: UserRole,
     avatar?: string | null,
     blockedUsers?: Partial<UserEntity>[],
-    deletedAt?: Date | null,
+    deletedAt?: Date | null
   ) {
     super(id, createdAt, updatedAt);
 
-    if (!email || email.trim() === '') {
-      throw new Error('User email cannot be empty');
+    if (!email || email.trim() === "") {
+      throw new Error("User email cannot be empty");
     }
-    if (!username || username.trim() === '') {
-      throw new Error('User username cannot be empty');
+    if (!username || username.trim() === "") {
+      throw new Error("User username cannot be empty");
     }
 
     this._email = email;
     this._username = username;
-    this._password = password ?? '';
-    this._firstName = firstName ?? '';
-    this._lastName = lastName ?? '';
+    this._password = password ?? "";
+    this._firstName = firstName ?? "";
+    this._lastName = lastName ?? "";
     this._role = role ?? UserRole.USER;
     this._avatar = avatar ?? null;
     this._blockedUsers = blockedUsers ?? [];
@@ -56,7 +56,7 @@ export class UserEntity extends AggregateRoot<string> {
     password?: string,
     firstName?: string,
     lastName?: string,
-    avatar?: string | null,
+    avatar?: string | null
   ): UserEntity {
     const id = uuidv7();
     const user = new UserEntity(
@@ -69,7 +69,7 @@ export class UserEntity extends AggregateRoot<string> {
       firstName,
       lastName,
       UserRole.USER,
-      avatar,
+      avatar
     );
 
     // Apply event immediately after creation
@@ -111,7 +111,7 @@ export class UserEntity extends AggregateRoot<string> {
   public updateProfile(
     firstName: string,
     lastName: string,
-    avatar: string | null,
+    avatar: string | null
   ) {
     this._firstName = firstName;
     this._lastName = lastName;
@@ -135,7 +135,7 @@ export class UserEntity extends AggregateRoot<string> {
   public unblockUser(userToUnblock: Partial<UserEntity>) {
     const originalLength = this._blockedUsers.length;
     this._blockedUsers = this._blockedUsers.filter(
-      (u) => u.id !== userToUnblock.id,
+      (u) => u.id !== userToUnblock.id
     );
     if (this._blockedUsers.length !== originalLength) {
       this.updatedAt = new Date();

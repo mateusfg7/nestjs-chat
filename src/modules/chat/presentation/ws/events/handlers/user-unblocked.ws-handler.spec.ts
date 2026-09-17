@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserUnblockedWsEventHandler } from './user-unblocked.ws-handler';
-import { ChatWsGateway } from '@modules/chat/presentation/ws/chat-ws.gateway';
-import { UserUnblockedEvent } from '@modules/user/contracts/events';
+import { ChatWsGateway } from "@modules/chat/presentation/ws/chat-ws.gateway";
+import { UserUnblockedEvent } from "@modules/user/contracts/events";
+import { Test, TestingModule } from "@nestjs/testing";
+import { UserUnblockedWsEventHandler } from "./user-unblocked.ws-handler";
 
-describe('UserUnblockedWsEventHandler', () => {
+describe("UserUnblockedWsEventHandler", () => {
   let handler: UserUnblockedWsEventHandler;
   let chatWsGateway: jest.Mocked<ChatWsGateway>;
 
@@ -21,17 +21,17 @@ describe('UserUnblockedWsEventHandler', () => {
     }).compile();
 
     handler = module.get<UserUnblockedWsEventHandler>(
-      UserUnblockedWsEventHandler,
+      UserUnblockedWsEventHandler
     );
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(handler).toBeDefined();
   });
 
-  describe('handle', () => {
-    it('should broadcast event to both users', async () => {
-      const event = new UserUnblockedEvent('unblocker-1', 'unblocked-1');
+  describe("handle", () => {
+    it("should broadcast event to both users", async () => {
+      const event = new UserUnblockedEvent("unblocker-1", "unblocked-1");
 
       await handler.handle(event);
 

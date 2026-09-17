@@ -1,1 +1,1 @@
-export { MessageCreatedDomainEvent } from '../domain/events/message-created.domain-event';
+export { MessageCreatedDomainEvent } from "../domain/events/message-created.domain-event";

@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthHttpController } from './auth-http.controller';
-import { CommandBus } from '@nestjs/cqrs';
-import { SignupCommand } from '@modules/auth/application/commands/signup/signup.command';
-import { SigninCommand } from '@modules/auth/application/commands/signin/signin.command';
+import { SigninCommand } from "@modules/auth/application/commands/signin/signin.command";
+import { SignupCommand } from "@modules/auth/application/commands/signup/signup.command";
+import { CommandBus } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import { AuthHttpController } from "./auth-http.controller";
 
-describe('AuthHttpController', () => {
+describe("AuthHttpController", () => {
   let controller: AuthHttpController;
   let commandBus: jest.Mocked<CommandBus>;
 
@@ -26,45 +26,45 @@ describe('AuthHttpController', () => {
     controller = module.get<AuthHttpController>(AuthHttpController);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
-  describe('signup', () => {
-    it('should execute SignupCommand and return the result', async () => {
-      const response = { accessToken: 'token', refreshToken: 'token' };
+  describe("signup", () => {
+    it("should execute SignupCommand and return the result", async () => {
+      const response = { accessToken: "token", refreshToken: "token" };
       commandBus.execute.mockResolvedValue(response);
 
       const body = {
-        email: 'test@test.com',
-        password: 'password123',
-        firstName: 'Test',
-        lastName: 'User',
+        email: "test@test.com",
+        password: "password123",
+        firstName: "Test",
+        lastName: "User",
       };
 
       const result = await controller.signup(body);
 
       expect(commandBus.execute).toHaveBeenCalledWith(
-        new SignupCommand('test@test.com', 'password123', 'Test', 'User'),
+        new SignupCommand("test@test.com", "password123", "Test", "User")
       );
       expect(result).toEqual(response);
     });
   });
 
-  describe('signin', () => {
-    it('should execute SigninCommand and return the result', async () => {
-      const response = { accessToken: 'token', refreshToken: 'token' };
+  describe("signin", () => {
+    it("should execute SigninCommand and return the result", async () => {
+      const response = { accessToken: "token", refreshToken: "token" };
       commandBus.execute.mockResolvedValue(response);
 
       const body = {
-        identifier: 'test@test.com',
-        password: 'password123',
+        identifier: "test@test.com",
+        password: "password123",
       };
 
       const result = await controller.signin(body as any);
 
       expect(commandBus.execute).toHaveBeenCalledWith(
-        new SigninCommand('test@test.com', 'password123'),
+        new SigninCommand("test@test.com", "password123")
       );
       expect(result).toEqual(response);
     });

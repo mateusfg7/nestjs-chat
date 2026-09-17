@@ -1,23 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RefreshTokensHandler } from './refresh-tokens.handler';
-import { TokenService } from '@modules/auth/application/services/token.service';
-import { AuthRepositoryPort } from '@modules/auth/application/ports/auth-repository.port';
-import { EventPublisher } from '@nestjs/cqrs';
-import { RefreshTokensCommand } from './refresh-tokens.command';
-import { UserRole } from '@modules/user/domain/enums/user-role.enum';
+import { AuthRepositoryPort } from "@modules/auth/application/ports/auth-repository.port";
+import { TokenService } from "@modules/auth/application/services/token.service";
 import {
   InvalidRefreshTokenException,
   TokenGenerationException,
-} from '@modules/auth/domain/auth.exceptions';
-import { RefreshTokenEntity } from '@modules/auth/domain/models/refresh-token.entity';
-import * as bcrypt from 'bcrypt';
+} from "@modules/auth/domain/auth.exceptions";
+import { RefreshTokenEntity } from "@modules/auth/domain/models/refresh-token.entity";
+import { UserRole } from "@modules/user/domain/enums/user-role.enum";
+import { EventPublisher } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import * as bcrypt from "bcrypt";
+import { RefreshTokensCommand } from "./refresh-tokens.command";
+import { RefreshTokensHandler } from "./refresh-tokens.handler";
 
-jest.mock('bcrypt', () => ({
+jest.mock("bcrypt", () => ({
   compare: jest.fn(),
   hash: jest.fn(),
 }));
 
-describe('RefreshTokensHandler', () => {
+describe("RefreshTokensHandler", () => {
   let handler: RefreshTokensHandler;
   let tokenService: jest.Mocked<TokenService>;
   let authRepository: jest.Mocked<AuthRepositoryPort>;
@@ -54,56 +54,56 @@ describe('RefreshTokensHandler', () => {
     handler = module.get<RefreshTokensHandler>(RefreshTokensHandler);
   });
 
-  describe('execute', () => {
-    const command = new RefreshTokensCommand('valid-token', UserRole.USER);
-    const mockPayload = { sub: 'user-1', jti: 'jti-1' };
+  describe("execute", () => {
+    const command = new RefreshTokensCommand("valid-token", UserRole.USER);
+    const mockPayload = { sub: "user-1", jti: "jti-1" };
     const mockEntity = RefreshTokenEntity.create(
-      'user-1',
-      'hashed-token',
-      'jti-1',
+      "user-1",
+      "hashed-token",
+      "jti-1"
     );
 
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
-    it('should throw InvalidRefreshTokenException if verify fails', async () => {
+    it("should throw InvalidRefreshTokenException if verify fails", async () => {
       tokenService.verifyRefreshToken.mockRejectedValue(new Error());
 
       await expect(handler.execute(command)).rejects.toThrow(
-        InvalidRefreshTokenException,
+        InvalidRefreshTokenException
       );
     });
 
-    it('should throw InvalidRefreshTokenException if token not found in db', async () => {
+    it("should throw InvalidRefreshTokenException if token not found in db", async () => {
       tokenService.verifyRefreshToken.mockResolvedValue(mockPayload);
       authRepository.getRefreshToken.mockResolvedValue(null);
 
       await expect(handler.execute(command)).rejects.toThrow(
-        InvalidRefreshTokenException,
+        InvalidRefreshTokenException
       );
     });
 
-    it('should throw InvalidRefreshTokenException if hash compare fails', async () => {
+    it("should throw InvalidRefreshTokenException if hash compare fails", async () => {
       tokenService.verifyRefreshToken.mockResolvedValue(mockPayload);
       authRepository.getRefreshToken.mockResolvedValue(mockEntity);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       await expect(handler.execute(command)).rejects.toThrow(
-        InvalidRefreshTokenException,
+        InvalidRefreshTokenException
       );
     });
 
-    it('should revoke old token, save new, and return output', async () => {
+    it("should revoke old token, save new, and return output", async () => {
       tokenService.verifyRefreshToken.mockResolvedValue(mockPayload);
       authRepository.getRefreshToken.mockResolvedValue(mockEntity);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      tokenService.signAccessToken.mockResolvedValue('new-access');
+      tokenService.signAccessToken.mockResolvedValue("new-access");
       tokenService.signRefreshToken.mockResolvedValue({
-        token: 'new-refresh',
-        jti: 'new-jti',
+        token: "new-refresh",
+        jti: "new-jti",
       });
-      (bcrypt.hash as jest.Mock).mockResolvedValue('new-hash');
+      (bcrypt.hash as jest.Mock).mockResolvedValue("new-hash");
       authRepository.save.mockResolvedValue({} as any);
 
       const result = await handler.execute(command);
@@ -111,21 +111,21 @@ describe('RefreshTokensHandler', () => {
       expect(mockEntity.deletedAt).not.toBeNull();
       expect(authRepository.save).toHaveBeenCalledTimes(2);
       expect(result).toEqual({
-        accessToken: 'new-access',
-        refreshToken: 'new-refresh',
+        accessToken: "new-access",
+        refreshToken: "new-refresh",
       });
     });
 
-    it('should fallback and throw TokenGenerationException if save fails', async () => {
+    it("should fallback and throw TokenGenerationException if save fails", async () => {
       tokenService.verifyRefreshToken.mockResolvedValue(mockPayload);
       authRepository.getRefreshToken.mockResolvedValue(mockEntity);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-      tokenService.signAccessToken.mockResolvedValue('new-access');
+      tokenService.signAccessToken.mockResolvedValue("new-access");
       tokenService.signRefreshToken.mockResolvedValue({
-        token: 'new-refresh',
-        jti: 'new-jti',
+        token: "new-refresh",
+        jti: "new-jti",
       });
-      (bcrypt.hash as jest.Mock).mockResolvedValue('new-hash');
+      (bcrypt.hash as jest.Mock).mockResolvedValue("new-hash");
 
       authRepository.save
         .mockResolvedValueOnce({} as any) // revoke success
@@ -133,7 +133,7 @@ describe('RefreshTokensHandler', () => {
         .mockResolvedValueOnce({} as any); // restore success
 
       await expect(handler.execute(command)).rejects.toThrow(
-        TokenGenerationException,
+        TokenGenerationException
       );
       expect(mockEntity.deletedAt).toBeNull(); // restored
       expect(authRepository.save).toHaveBeenCalledTimes(3);

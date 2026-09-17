@@ -1,21 +1,21 @@
-import { pathsToModuleNameMapper } from 'ts-jest';
-import type { Config } from 'jest';
-import { readFileSync } from 'fs';
+import { readFileSync } from "node:fs";
+import type { Config } from "jest";
+import { pathsToModuleNameMapper } from "ts-jest";
 
-const { compilerOptions } = JSON.parse(readFileSync('./tsconfig.json', 'utf8'));
+const { compilerOptions } = JSON.parse(readFileSync("./tsconfig.json", "utf8"));
 
 const config: Config = {
-  moduleFileExtensions: ['js', 'json', 'ts'],
-  rootDir: '.',
-  testEnvironment: 'node',
-  testRegex: '.e2e-spec.ts$',
+  moduleFileExtensions: ["js", "json", "ts"],
+  rootDir: ".",
+  testEnvironment: "node",
+  testRegex: ".e2e-spec.ts$",
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest',
+    "^.+\\.(t|j)s$": "ts-jest",
   },
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: '<rootDir>/../',
+    prefix: "<rootDir>/../",
   }),
-  transformIgnorePatterns: ['/node_modules/(?!uuid)/'],
+  transformIgnorePatterns: ["/node_modules/(?!uuid)/"],
 };
 
 export default config;

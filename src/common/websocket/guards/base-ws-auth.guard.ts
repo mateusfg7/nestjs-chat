@@ -1,7 +1,7 @@
-import { CanActivate, ExecutionContext, Logger } from '@nestjs/common';
-import { Socket } from 'socket.io';
-import { WsException } from '@nestjs/websockets';
-import { ClientData } from '@common/websocket/interfaces/client-data.interface';
+import { ClientData } from "@common/websocket/interfaces/client-data.interface";
+import { CanActivate, ExecutionContext, Logger } from "@nestjs/common";
+import { WsException } from "@nestjs/websockets";
+import { Socket } from "socket.io";
 
 export abstract class BaseWsAuthGuard implements CanActivate {
   protected abstract readonly logger: Logger;
@@ -9,7 +9,7 @@ export abstract class BaseWsAuthGuard implements CanActivate {
   protected abstract verifyToken(token: string): Promise<any>;
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    this.logger.debug('authenticating user...');
+    this.logger.debug("authenticating user...");
 
     const wsContext = context.switchToWs();
     const client = wsContext.getClient<Socket<any, any, any, ClientData>>();
@@ -21,13 +21,13 @@ export abstract class BaseWsAuthGuard implements CanActivate {
         Date.now() > client.data.authUser.exp * 1000
       ) {
         this.logger.warn(
-          `Token expired for user: ${client.data.authUser.sub}.`,
+          `Token expired for user: ${client.data.authUser.sub}.`
         );
         this.handleExpiredSession(client, data);
         return false;
       }
       this.logger.verbose(
-        `user already authenticated: ${client.data.authUser.sub}`,
+        `user already authenticated: ${client.data.authUser.sub}`
       );
       return true;
     }
@@ -43,11 +43,11 @@ export abstract class BaseWsAuthGuard implements CanActivate {
     } catch (e) {
       this.logger.debug(`Error from authentication: ${(e as Error).message}`);
       client.data.authPromise = null;
-      if (data && typeof data.ack === 'function') {
-        data.ack({ error: 'Unauthorized', statusCode: 401 });
+      if (data && typeof data.ack === "function") {
+        data.ack({ error: "Unauthorized", statusCode: 401 });
       }
       throw new WsException({
-        code: 'UNAUTHENTICATED',
+        code: "UNAUTHENTICATED",
         message: (e as Error).message,
       });
     }
@@ -59,38 +59,40 @@ export abstract class BaseWsAuthGuard implements CanActivate {
     }
 
     const accessToken = this.extractToken(client);
-    if (!accessToken) throw new WsException('Unauthorized');
+    if (!accessToken) {
+      throw new WsException("Unauthorized");
+    }
 
     try {
       const verifyRes = await this.verifyToken(accessToken);
       Object.assign(client.data, {
         authUser: verifyRes,
-        accessToken: accessToken,
+        accessToken,
       });
       client.data.authPromise = null;
       return verifyRes;
     } catch (e) {
       this.logger.warn(`Error verifying access token: ${(e as Error).message}`);
-      throw new WsException('Unauthorized');
+      throw new WsException("Unauthorized");
     }
   }
 
   private extractToken(client: Socket): string | null {
     const token =
       client.request.headers.authorization ?? client.handshake.auth?.token;
-    const [type, tokenValue] = token?.split(' ') ?? [];
-    return type === 'Bearer' ? tokenValue : null;
+    const [type, tokenValue] = token?.split(" ") ?? [];
+    return type === "Bearer" ? tokenValue : null;
   }
 
   private handleExpiredSession(
     client: Socket<any, any, any, ClientData>,
-    data: any,
+    data: any
   ) {
-    if (data && typeof data.ack === 'function') {
-      data.ack({ error: 'Unauthorized', statusCode: 401 });
+    if (data && typeof data.ack === "function") {
+      data.ack({ error: "Unauthorized", statusCode: 401 });
     }
     client.data = null;
     client.disconnect(true);
-    throw new WsException({ code: 'UNAUTHENTICATED', message: 'Unauthorized' });
+    throw new WsException({ code: "UNAUTHENTICATED", message: "Unauthorized" });
   }
 }

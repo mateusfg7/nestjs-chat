@@ -1,3 +1,7 @@
+import { ConversationType } from "@modules/chat/domain/enums/conversation-type.enum";
+import { ConversationEntity } from "@modules/chat/domain/models/conversation.model";
+import { ConversationMember } from "@modules/chat/infrastructure/database/postgres/entities/conversation-member.entity";
+import { Message } from "@modules/chat/infrastructure/database/postgres/entities/message.entity";
 import {
   Column,
   CreateDateColumn,
@@ -7,29 +11,25 @@ import {
   OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
-} from 'typeorm';
-import { ConversationType } from '@modules/chat/domain/enums/conversation-type.enum';
-import { Message } from '@modules/chat/infrastructure/database/postgres/entities/message.entity';
-import { ConversationEntity } from '@modules/chat/domain/models/conversation.model';
-import { ConversationMember } from '@modules/chat/infrastructure/database/postgres/entities/conversation-member.entity';
+} from "typeorm";
 
-@Entity({ schema: 'chat', name: 'conversations' })
+@Entity({ schema: "chat", name: "conversations" })
 export class Conversation {
-  @PrimaryColumn('uuid')
+  @PrimaryColumn("uuid")
   id: string;
 
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: "varchar", nullable: true })
   title: string | null;
 
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: "varchar", nullable: true })
   picture: string | null;
 
-  @Column({ type: 'varchar', nullable: true })
-  @Index('conversations_identifier_uniq', { unique: true })
+  @Column({ type: "varchar", nullable: true })
+  @Index("conversations_identifier_uniq", { unique: true })
   identifier: string | null;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: ConversationType,
     default: ConversationType.DIRECT,
   })
@@ -44,17 +44,26 @@ export class Conversation {
   @DeleteDateColumn()
   deleted_at: Date | null;
 
-  @OneToMany(() => Message, (m) => m.conversation, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(
+    () => Message,
+    (m) => m.conversation,
+    {
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    }
+  )
   messages: Message[];
 
-  @OneToMany(() => ConversationMember, (cm) => cm.conversation)
+  @OneToMany(
+    () => ConversationMember,
+    (cm) => cm.conversation
+  )
   conversationMembers: ConversationMember[];
 
   static fromDomain(entity: ConversationEntity): Conversation {
-    if (!entity) return null;
+    if (!entity) {
+      return null;
+    }
 
     const conversation = new Conversation();
     conversation.id = entity.id;
@@ -72,7 +81,7 @@ export class Conversation {
 
     if (entity.members && entity.members.length > 0) {
       conversation.conversationMembers = entity.members.map((cm) =>
-        ConversationMember.fromDomain(cm),
+        ConversationMember.fromDomain(cm)
       );
     }
 
@@ -80,7 +89,9 @@ export class Conversation {
   }
 
   static toDomain(conversation: Conversation): ConversationEntity {
-    if (!conversation) return null;
+    if (!conversation) {
+      return null;
+    }
 
     const entity = ConversationEntity.reconstruct(
       conversation.id,
@@ -90,20 +101,20 @@ export class Conversation {
       conversation.identifier,
       conversation.created_at,
       conversation.updated_at,
-      conversation.deleted_at,
+      conversation.deleted_at
     );
 
     if (conversation.messages) {
       entity.loadMessages(
-        conversation.messages.map((m) => Message.toDomain(m)),
+        conversation.messages.map((m) => Message.toDomain(m))
       );
     }
 
     if (conversation.conversationMembers) {
       entity.loadMembers(
         conversation.conversationMembers.map((cm) =>
-          ConversationMember.toDomain(cm),
-        ),
+          ConversationMember.toDomain(cm)
+        )
       );
     }
 

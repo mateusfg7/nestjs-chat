@@ -4,17 +4,17 @@ export interface PaginatedResult<T> {
 }
 
 export interface PaginationMeta {
+  hasNext: boolean;
+  hasPrevious: boolean;
   page: number;
   pageSize: number;
   total: number;
   totalPages: number;
-  hasNext: boolean;
-  hasPrevious: boolean;
 }
 
 export interface PaginationOptions {
+  limit: number;
+  offset: number;
   page: number;
   pageSize: number;
-  offset: number;
-  limit: number;
 }

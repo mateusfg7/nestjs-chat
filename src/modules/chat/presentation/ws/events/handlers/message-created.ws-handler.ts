@@ -1,29 +1,31 @@
-import { EventsHandler, IEventHandler, QueryBus } from '@nestjs/cqrs';
-import { MessageCreatedDomainEvent } from '@modules/chat/contracts/events';
-import { ChatWsGateway } from '@modules/chat/presentation/ws/chat-ws.gateway';
-import { Logger } from '@nestjs/common';
-import { UserIntegrationPort } from '@modules/chat/application/ports/user-integration.port';
-import { GetUserConversationQuery } from '@modules/chat/application/queries/get-user-conversation/get-user-conversation.query';
+import { ConversationRepositoryPort } from "@modules/chat/application/ports/conversation-repository.port";
+import { UserIntegrationPort } from "@modules/chat/application/ports/user-integration.port";
+import { GetUserConversationQuery } from "@modules/chat/application/queries/get-user-conversation/get-user-conversation.query";
+import { MessageCreatedDomainEvent } from "@modules/chat/contracts/events";
+import { ChatWsGateway } from "@modules/chat/presentation/ws/chat-ws.gateway";
 import {
   UserMessageCreated,
   UserMessageCreatedEvent,
-} from '@modules/chat/presentation/ws/events/message-created.event';
-import { ConversationRepositoryPort } from '@modules/chat/application/ports/conversation-repository.port';
+} from "@modules/chat/presentation/ws/events/message-created.event";
+import { Logger } from "@nestjs/common";
+import { EventsHandler, IEventHandler, QueryBus } from "@nestjs/cqrs";
 
 @EventsHandler(MessageCreatedDomainEvent)
-export class MessageCreatedWsEventHandler implements IEventHandler<MessageCreatedDomainEvent> {
+export class MessageCreatedWsEventHandler
+  implements IEventHandler<MessageCreatedDomainEvent>
+{
   private readonly logger = new Logger(MessageCreatedWsEventHandler.name);
 
   constructor(
     private readonly chatWsGateway: ChatWsGateway,
     private readonly userIntegrationPort: UserIntegrationPort,
     private readonly queryBus: QueryBus,
-    private readonly commandRepo: ConversationRepositoryPort,
+    private readonly commandRepo: ConversationRepositoryPort
   ) {}
 
   async handle(event: MessageCreatedDomainEvent) {
     this.logger.debug(
-      `Handling MessageCreatedDomainEvent for message ${event.messageId}`,
+      `Handling MessageCreatedDomainEvent for message ${event.messageId}`
     );
 
     // Get conversation to find target users
@@ -32,31 +34,33 @@ export class MessageCreatedWsEventHandler implements IEventHandler<MessageCreate
 
     try {
       const convEntity = await this.commandRepo.getConversationById(
-        event.conversationId,
+        event.conversationId
       );
       const senderMember = convEntity.members.find(
-        (m) => m.id === event.senderId,
+        (m) => m.id === event.senderId
       );
-      if (!senderMember) throw new Error('Sender member not found');
+      if (!senderMember) {
+        throw new Error("Sender member not found");
+      }
       senderUserId = senderMember.userId;
 
       conversationDto = await this.queryBus.execute(
-        new GetUserConversationQuery(event.conversationId, senderUserId),
+        new GetUserConversationQuery(event.conversationId, senderUserId)
       );
     } catch {
       this.logger.error(
-        `Could not find conversation for message ${event.messageId}`,
+        `Could not find conversation for message ${event.messageId}`
       );
       return;
     }
 
     const targetMember = conversationDto.members.find(
-      (member) => member.userId !== senderUserId,
+      (member) => member.userId !== senderUserId
     );
 
     if (!targetMember) {
       this.logger.error(
-        `No target member found in conversation ${conversationDto.id}`,
+        `No target member found in conversation ${conversationDto.id}`
       );
       return;
     }
@@ -90,10 +94,10 @@ export class MessageCreatedWsEventHandler implements IEventHandler<MessageCreate
             avatar: conversationDto.picture,
             username: conversationDto.identifier,
           },
-        }),
+        })
       );
     } catch {
-      this.logger.error(`Could not fetch users for message broadcast`);
+      this.logger.error("Could not fetch users for message broadcast");
     }
   }
 }

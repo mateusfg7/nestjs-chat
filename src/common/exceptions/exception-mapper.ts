@@ -1,5 +1,5 @@
-import { HttpStatus } from '@nestjs/common';
-import { DomainErrorType } from './domain.exception';
+import { HttpStatus } from "@nestjs/common";
+import { DomainErrorType } from "./domain.exception";
 
 const domainErrorTypeToHttpStatus: Record<DomainErrorType, HttpStatus> = {
   NOT_FOUND: HttpStatus.NOT_FOUND,
@@ -12,7 +12,7 @@ const domainErrorTypeToHttpStatus: Record<DomainErrorType, HttpStatus> = {
 };
 
 export function mapDomainErrorTypeToHttpStatus(
-  type: DomainErrorType,
+  type: DomainErrorType
 ): HttpStatus {
   return domainErrorTypeToHttpStatus[type] || HttpStatus.BAD_REQUEST;
 }

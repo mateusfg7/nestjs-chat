@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthIntegrationAdapter } from './auth-integration.adapter';
-import { QueryBus } from '@nestjs/cqrs';
-import { VerifyAccessTokenQuery } from '@modules/auth/application/queries/verify-access-token/verify-access-token.query';
+import { VerifyAccessTokenQuery } from "@modules/auth/application/queries/verify-access-token/verify-access-token.query";
+import { QueryBus } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import { AuthIntegrationAdapter } from "./auth-integration.adapter";
 
-describe('AuthIntegrationAdapter', () => {
+describe("AuthIntegrationAdapter", () => {
   let adapter: AuthIntegrationAdapter;
   let queryBusMock: any;
 
@@ -22,31 +22,31 @@ describe('AuthIntegrationAdapter', () => {
     adapter = module.get<AuthIntegrationAdapter>(AuthIntegrationAdapter);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(adapter).toBeDefined();
   });
 
-  describe('verifyToken', () => {
-    it('should execute VerifyAccessTokenQuery and return mapped payload', async () => {
+  describe("verifyToken", () => {
+    it("should execute VerifyAccessTokenQuery and return mapped payload", async () => {
       const mockPayload = {
-        sub: 'user-1',
-        role: 'user',
-        exp: 123456789,
-        iat: 123456,
-        aud: 'aud',
-        iss: 'iss',
+        sub: "user-1",
+        role: "user",
+        exp: 123_456_789,
+        iat: 123_456,
+        aud: "aud",
+        iss: "iss",
       };
       queryBusMock.execute.mockResolvedValue(mockPayload);
 
-      const result = await adapter.verifyToken('valid-token');
+      const result = await adapter.verifyToken("valid-token");
 
       expect(queryBusMock.execute).toHaveBeenCalledWith(
-        new VerifyAccessTokenQuery('valid-token'),
+        new VerifyAccessTokenQuery("valid-token")
       );
       expect(result).toEqual({
-        sub: 'user-1',
-        role: 'user',
-        exp: 123456789,
+        sub: "user-1",
+        role: "user",
+        exp: 123_456_789,
       });
     });
   });

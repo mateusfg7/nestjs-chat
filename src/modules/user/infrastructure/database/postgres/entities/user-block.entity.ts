@@ -1,3 +1,4 @@
+import { User } from "@modules/user/infrastructure/database/postgres/entities/user.entity";
 import {
   CreateDateColumn,
   DeleteDateColumn,
@@ -6,37 +7,44 @@ import {
   ManyToOne,
   PrimaryColumn,
   UpdateDateColumn,
-} from 'typeorm';
-import { User } from '@modules/user/infrastructure/database/postgres/entities/user.entity';
+} from "typeorm";
 
-@Entity({ schema: 'user', name: 'user_blocks' })
+@Entity({ schema: "user", name: "user_blocks" })
 export class UserBlock {
-  @PrimaryColumn({ type: 'uuid' })
+  @PrimaryColumn({ type: "uuid" })
   blocker_id: string;
 
-  @PrimaryColumn({ type: 'uuid' })
+  @PrimaryColumn({ type: "uuid" })
   blocked_id: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: "timestamp" })
   created_at: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: "timestamp" })
   updated_at: Date;
 
-  @DeleteDateColumn({ type: 'timestamp' })
+  @DeleteDateColumn({ type: "timestamp" })
   deleted_at: Date | null;
 
-  @ManyToOne(() => User, (u) => u.blockerUsers, {
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'blocker_id' })
+  @ManyToOne(
+    () => User,
+    (u) => u.blockerUsers,
+    {
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    }
+  )
+  @JoinColumn({ name: "blocker_id" })
   blocker: User;
 
-  @ManyToOne(() => User, (u) => u.blockedUsers, {
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'blocked_id' })
+  @ManyToOne(
+    () => User,
+    (u) => u.blockedUsers,
+    {
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    }
+  )
+  @JoinColumn({ name: "blocked_id" })
   blocked: User;
 }

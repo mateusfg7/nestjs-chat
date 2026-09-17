@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DeleteUserHandler } from './delete-user.handler';
-import { UserRepositoryPort } from '@modules/user/application/ports/user-repository.port';
-import { DeleteUserCommand } from './delete-user.command';
-import { Logger } from '@nestjs/common';
+import { UserRepositoryPort } from "@modules/user/application/ports/user-repository.port";
+import { Logger } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { DeleteUserCommand } from "./delete-user.command";
+import { DeleteUserHandler } from "./delete-user.handler";
 
-describe('DeleteUserHandler', () => {
+describe("DeleteUserHandler", () => {
   let handler: DeleteUserHandler;
   let userRepository: jest.Mocked<UserRepositoryPort>;
 
@@ -23,26 +23,26 @@ describe('DeleteUserHandler', () => {
     handler = module.get<DeleteUserHandler>(DeleteUserHandler);
   });
 
-  it('should successfully delete a user', async () => {
+  it("should successfully delete a user", async () => {
     userRepository.delete.mockResolvedValue(true);
-    const command = new DeleteUserCommand('user-1');
+    const command = new DeleteUserCommand("user-1");
 
     await handler.execute(command);
 
-    expect(userRepository.delete).toHaveBeenCalledWith('user-1');
+    expect(userRepository.delete).toHaveBeenCalledWith("user-1");
   });
 
-  it('should log a warning if user is not found or not deleted', async () => {
+  it("should log a warning if user is not found or not deleted", async () => {
     userRepository.delete.mockResolvedValue(false);
-    const loggerSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+    const loggerSpy = jest.spyOn(Logger.prototype, "warn").mockImplementation();
 
-    const command = new DeleteUserCommand('user-2');
+    const command = new DeleteUserCommand("user-2");
 
     await handler.execute(command);
 
-    expect(userRepository.delete).toHaveBeenCalledWith('user-2');
+    expect(userRepository.delete).toHaveBeenCalledWith("user-2");
     expect(loggerSpy).toHaveBeenCalledWith(
-      'User with ID user-2 not found or could not be deleted.',
+      "User with ID user-2 not found or could not be deleted."
     );
   });
 });

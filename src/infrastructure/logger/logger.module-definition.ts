@@ -1,13 +1,13 @@
-import { ConfigurableModuleBuilder } from '@nestjs/common';
-import { Params } from 'nestjs-pino';
+import { ConfigurableModuleBuilder } from "@nestjs/common";
+import { Params } from "nestjs-pino";
 
 export interface LoggerModuleOptions {
-  pinoHttp?: Params['pinoHttp'];
+  pinoHttp?: Params["pinoHttp"];
 }
 
 export const { ConfigurableModuleClass } =
   new ConfigurableModuleBuilder<LoggerModuleOptions>()
-    .setClassMethodName('forRoot')
+    .setClassMethodName("forRoot")
     .setExtras({ isGlobal: false }, (definition, extras) => ({
       ...definition,
       global: extras.isGlobal,

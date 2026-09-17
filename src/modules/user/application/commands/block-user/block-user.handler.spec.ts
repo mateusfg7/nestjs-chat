@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { BlockUserHandler } from './block-user.handler';
-import { UserRepositoryPort } from '@modules/user/application/ports/user-repository.port';
-import { EventPublisher } from '@nestjs/cqrs';
-import { BlockUserCommand } from './block-user.command';
-import { UserNotFoundException } from '@modules/user/domain/user.exceptions';
-import { UserEntity } from '@modules/user/domain/models/user.model';
+import { UserRepositoryPort } from "@modules/user/application/ports/user-repository.port";
+import { UserEntity } from "@modules/user/domain/models/user.model";
+import { UserNotFoundException } from "@modules/user/domain/user.exceptions";
+import { EventPublisher } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import { BlockUserCommand } from "./block-user.command";
+import { BlockUserHandler } from "./block-user.handler";
 
-describe('BlockUserHandler', () => {
+describe("BlockUserHandler", () => {
   let handler: BlockUserHandler;
   let userRepository: jest.Mocked<UserRepositoryPort>;
   let publisher: jest.Mocked<EventPublisher>;
@@ -37,31 +37,31 @@ describe('BlockUserHandler', () => {
     handler = module.get<BlockUserHandler>(BlockUserHandler);
   });
 
-  it('should throw UserNotFoundException if blocker is not found', async () => {
+  it("should throw UserNotFoundException if blocker is not found", async () => {
     userRepository.getUserById.mockResolvedValueOnce(null);
-    const command = new BlockUserCommand('blocker-1', 'blocked-1');
+    const command = new BlockUserCommand("blocker-1", "blocked-1");
 
     await expect(handler.execute(command)).rejects.toThrow(
-      UserNotFoundException,
+      UserNotFoundException
     );
-    expect(userRepository.getUserById).toHaveBeenCalledWith('blocker-1');
+    expect(userRepository.getUserById).toHaveBeenCalledWith("blocker-1");
   });
 
-  it('should throw UserNotFoundException if blocked user is not found', async () => {
+  it("should throw UserNotFoundException if blocked user is not found", async () => {
     userRepository.getUserById
       .mockResolvedValueOnce({} as any)
       .mockResolvedValueOnce(null);
-    const command = new BlockUserCommand('blocker-1', 'blocked-1');
+    const command = new BlockUserCommand("blocker-1", "blocked-1");
 
     await expect(handler.execute(command)).rejects.toThrow(
-      UserNotFoundException,
+      UserNotFoundException
     );
-    expect(userRepository.getUserById).toHaveBeenCalledWith('blocked-1');
+    expect(userRepository.getUserById).toHaveBeenCalledWith("blocked-1");
   });
 
-  it('should successfully block user', async () => {
-    const blocker = UserEntity.create('blocker@test.com', 'blocker');
-    const blocked = UserEntity.create('blocked@test.com', 'blocked');
+  it("should successfully block user", async () => {
+    const blocker = UserEntity.create("blocker@test.com", "blocker");
+    const blocked = UserEntity.create("blocked@test.com", "blocked");
 
     userRepository.getUserById
       .mockResolvedValueOnce(blocker)

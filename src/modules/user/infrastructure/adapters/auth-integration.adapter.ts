@@ -1,12 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { VerifyAccessTokenQuery } from "@modules/auth/application/queries/verify-access-token/verify-access-token.query";
+import { AccessTokenPayload } from "@modules/auth/domain/types/access-token-payload.type";
 import {
   AuthIntegrationPort,
   ValidatedTokenPayload,
-} from '@modules/user/application/ports/auth-integration.port';
-import { QueryBus } from '@nestjs/cqrs';
-
-import { VerifyAccessTokenQuery } from '@modules/auth/application/queries/verify-access-token/verify-access-token.query';
-import { AccessTokenPayload } from '@modules/auth/domain/types/access-token-payload.type';
+} from "@modules/user/application/ports/auth-integration.port";
+import { Injectable } from "@nestjs/common";
+import { QueryBus } from "@nestjs/cqrs";
 
 @Injectable()
 export class AuthIntegrationAdapter implements AuthIntegrationPort {

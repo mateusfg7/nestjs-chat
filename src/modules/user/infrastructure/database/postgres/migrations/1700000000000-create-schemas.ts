@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class CreateUserSchemas1700000000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ChatWsGuard } from './chat-ws.guard';
-import { AuthIntegrationPort } from '@modules/chat/application/ports/auth-integration.port';
+import { AuthIntegrationPort } from "@modules/chat/application/ports/auth-integration.port";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ChatWsGuard } from "./chat-ws.guard";
 
-describe('ChatWsGuard', () => {
+describe("ChatWsGuard", () => {
   let guard: ChatWsGuard;
   let authIntegrationPort: jest.Mocked<AuthIntegrationPort>;
 
@@ -24,19 +24,19 @@ describe('ChatWsGuard', () => {
     guard = module.get<ChatWsGuard>(ChatWsGuard);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(guard).toBeDefined();
   });
 
-  describe('verifyToken', () => {
-    it('should call authIntegrationPort.verifyToken', async () => {
-      const payload = { sub: 'user-1' };
+  describe("verifyToken", () => {
+    it("should call authIntegrationPort.verifyToken", async () => {
+      const payload = { sub: "user-1" };
       authIntegrationPort.verifyToken.mockResolvedValue(payload as any);
 
-      const result = await (guard as any).verifyToken('valid-token');
+      const result = await (guard as any).verifyToken("valid-token");
 
       expect(authIntegrationPort.verifyToken).toHaveBeenCalledWith(
-        'valid-token',
+        "valid-token"
       );
       expect(result).toEqual(payload);
     });

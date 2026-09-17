@@ -1,32 +1,32 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigType } from '@nestjs/config';
-import { v4 as uuidV4 } from 'uuid';
-import { authConfig } from '@modules/auth/infrastructure/config/auth.config';
+import { authConfig } from "@modules/auth/infrastructure/config/auth.config";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigType } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { v4 as uuidV4 } from "uuid";
 
 @Injectable()
 export class TokenService {
   constructor(
     @Inject(authConfig.KEY)
     private readonly authConf: ConfigType<typeof authConfig>,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService
   ) {}
 
   async signAccessToken(userId: string, role: string): Promise<string> {
     return await this.jwtService.signAsync(
       {
         sub: userId,
-        role: role,
+        role,
       },
       {
         privateKey: this.authConf.accessPrivateKey,
-        expiresIn: '1d',
-      },
+        expiresIn: "1d",
+      }
     );
   }
 
   async signRefreshToken(
-    userId: string,
+    userId: string
   ): Promise<{ token: string; jti: string }> {
     const jti = uuidV4();
     const token = await this.jwtService.signAsync(
@@ -35,9 +35,9 @@ export class TokenService {
       },
       {
         privateKey: this.authConf.refreshPrivateKey,
-        expiresIn: '7d',
+        expiresIn: "7d",
         jwtid: jti,
-      },
+      }
     );
 
     return { token, jti };

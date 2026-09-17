@@ -1,3 +1,6 @@
+import { ConversationMemberEntity } from "@modules/chat/domain/models/conversation-member.model";
+import { Conversation } from "@modules/chat/infrastructure/database/postgres/entities/conversation.entity";
+import { Message } from "@modules/chat/infrastructure/database/postgres/entities/message.entity";
 import {
   Column,
   CreateDateColumn,
@@ -7,26 +10,23 @@ import {
   ManyToOne,
   PrimaryColumn,
   UpdateDateColumn,
-} from 'typeorm';
-import { Conversation } from '@modules/chat/infrastructure/database/postgres/entities/conversation.entity';
-import { Message } from '@modules/chat/infrastructure/database/postgres/entities/message.entity';
-import { ConversationMemberEntity } from '@modules/chat/domain/models/conversation-member.model';
+} from "typeorm";
 
-@Entity({ schema: 'chat', name: 'conversation_members' })
+@Entity({ schema: "chat", name: "conversation_members" })
 export class ConversationMember {
-  @PrimaryColumn('uuid')
+  @PrimaryColumn("uuid")
   id: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: "uuid" })
   user_id: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: "uuid" })
   conversation_id: string;
 
-  @Column({ type: 'uuid', nullable: true })
+  @Column({ type: "uuid", nullable: true })
   last_seen_message_id: string;
 
-  @Column({ type: 'uuid', nullable: true })
+  @Column({ type: "uuid", nullable: true })
   last_message_id: string;
 
   @CreateDateColumn()
@@ -38,29 +38,35 @@ export class ConversationMember {
   @DeleteDateColumn()
   deleted_at: Date | null;
 
-  @ManyToOne(() => Conversation, (c) => c.conversationMembers, {
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'conversation_id', referencedColumnName: 'id' })
+  @ManyToOne(
+    () => Conversation,
+    (c) => c.conversationMembers,
+    {
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    }
+  )
+  @JoinColumn({ name: "conversation_id", referencedColumnName: "id" })
   conversation: Conversation;
 
   @ManyToOne(() => Message, {
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
   })
-  @JoinColumn({ name: 'last_seen_message_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: "last_seen_message_id", referencedColumnName: "id" })
   lastSeenMessage: Message;
 
   @ManyToOne(() => Message, {
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
   })
-  @JoinColumn({ name: 'last_message_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: "last_message_id", referencedColumnName: "id" })
   lastMessage: Message;
 
   static fromDomain(entity: ConversationMemberEntity): ConversationMember {
-    if (!entity) return null;
+    if (!entity) {
+      return null;
+    }
 
     const conversationMember = new ConversationMember();
     conversationMember.id = entity.id;
@@ -76,9 +82,11 @@ export class ConversationMember {
   }
 
   static toDomain(
-    conversationMember: ConversationMember,
+    conversationMember: ConversationMember
   ): ConversationMemberEntity {
-    if (!conversationMember) return null;
+    if (!conversationMember) {
+      return null;
+    }
 
     const entity = ConversationMemberEntity.reconstruct(
       conversationMember.id,
@@ -88,17 +96,17 @@ export class ConversationMember {
       conversationMember.last_message_id,
       conversationMember.created_at,
       conversationMember.updated_at,
-      conversationMember.deleted_at,
+      conversationMember.deleted_at
     );
 
     if (conversationMember.conversation) {
       entity.loadConversation(
-        Conversation.toDomain(conversationMember.conversation),
+        Conversation.toDomain(conversationMember.conversation)
       );
     }
     if (conversationMember.lastSeenMessage) {
       entity.loadLastSeenMessage(
-        Message.toDomain(conversationMember.lastSeenMessage),
+        Message.toDomain(conversationMember.lastSeenMessage)
       );
     }
     if (conversationMember.lastMessage) {

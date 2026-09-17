@@ -4,7 +4,7 @@ export abstract class Entity<TId> {
   protected constructor(
     public readonly id: TId,
     public readonly createdAt: Date,
-    updatedAt: Date,
+    updatedAt: Date
   ) {
     this._updatedAt = updatedAt;
   }
@@ -18,7 +18,7 @@ export abstract class Entity<TId> {
   }
 
   public equals(object?: Entity<TId>): boolean {
-    if (object == null) {
+    if (object === null) {
       return false;
     }
 

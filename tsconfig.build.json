@@ -6,8 +6,8 @@
   },
   "exclude": [
     "chatterbox/node_modules",
-    "test", 
-    "dist", 
+    "test",
+    "dist",
     "**/*spec.ts",
     "jest.config.ts"
   ]

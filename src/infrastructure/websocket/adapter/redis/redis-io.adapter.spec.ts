@@ -1,13 +1,13 @@
-import { RedisIoAdapter } from './redis-io.adapter';
-import { INestApplication } from '@nestjs/common';
-import { createAdapter } from '@socket.io/redis-adapter';
-import { RedisProvider } from '@infrastructure/redis/redis.provider';
+import { RedisProvider } from "@infrastructure/redis/redis.provider";
+import { INestApplication } from "@nestjs/common";
+import { createAdapter } from "@socket.io/redis-adapter";
+import { RedisIoAdapter } from "./redis-io.adapter";
 
-jest.mock('@socket.io/redis-adapter', () => ({
-  createAdapter: jest.fn().mockReturnValue('mock-adapter'),
+jest.mock("@socket.io/redis-adapter", () => ({
+  createAdapter: jest.fn().mockReturnValue("mock-adapter"),
 }));
 
-describe('RedisIoAdapter', () => {
+describe("RedisIoAdapter", () => {
   let adapter: RedisIoAdapter;
   let app: jest.Mocked<INestApplication>;
   let redisClient: any;
@@ -25,8 +25,8 @@ describe('RedisIoAdapter', () => {
     adapter = new RedisIoAdapter({ port: 3000 } as any, app, redisProvider);
   });
 
-  describe('connectToRedis', () => {
-    it('should connect pub and sub clients and create adapter', async () => {
+  describe("connectToRedis", () => {
+    it("should connect pub and sub clients and create adapter", async () => {
       await adapter.connectToRedis();
 
       expect(redisProvider.getClient).toHaveBeenCalled();
@@ -35,23 +35,23 @@ describe('RedisIoAdapter', () => {
     });
   });
 
-  describe('createIOServer', () => {
-    it('should configure io server with redis adapter', () => {
-      adapter['adapterConstructor'] = 'test-adapter' as any;
+  describe("createIOServer", () => {
+    it("should configure io server with redis adapter", () => {
+      adapter["adapterConstructor"] = "test-adapter" as any;
       const options = {} as any;
 
       const server = { adapter: jest.fn() };
       const superCreateIOServer = jest
         .spyOn(
           Object.getPrototypeOf(RedisIoAdapter.prototype),
-          'createIOServer',
+          "createIOServer"
         )
         .mockReturnValue(server);
 
       const result = adapter.createIOServer(3000, options);
 
       expect(superCreateIOServer).toHaveBeenCalledWith(3000, options);
-      expect(server.adapter).toHaveBeenCalledWith('test-adapter');
+      expect(server.adapter).toHaveBeenCalledWith("test-adapter");
       expect(result).toBe(server);
     });
   });

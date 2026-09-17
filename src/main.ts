@@ -1,27 +1,27 @@
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ConfigType } from '@nestjs/config';
-import { httpConfig } from '@infrastructure/http/http.config';
-import { wsConfig } from '@infrastructure/websocket/ws.config';
-import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
-import { Logger as PinoLogger } from 'nestjs-pino';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { RedisProvider } from '@infrastructure/redis/redis.provider';
-import { RedisIoAdapter } from '@infrastructure/websocket/adapter/redis/redis-io.adapter';
-import { GlobalHttpExceptionFilter } from '@common/http/filters/global-http-exception.filter';
+import { GlobalHttpExceptionFilter } from "@common/http/filters/global-http-exception.filter";
+import { httpConfig } from "@infrastructure/http/http.config";
+import { RedisProvider } from "@infrastructure/redis/redis.provider";
+import { RedisIoAdapter } from "@infrastructure/websocket/adapter/redis/redis-io.adapter";
+import { wsConfig } from "@infrastructure/websocket/ws.config";
+import { INestApplication, Logger, ValidationPipe } from "@nestjs/common";
+import { ConfigType } from "@nestjs/config";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { Logger as PinoLogger } from "nestjs-pino";
+import { AppModule } from "./app.module";
 
 function setUpSwagger(app: INestApplication) {
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('NestJS Chat API')
-    .setVersion('1')
-    .addBearerAuth({ 'x-tokenName': 'Authorization', type: 'http' }, 'Token')
+    .setTitle("NestJS Chat API")
+    .setVersion("1")
+    .addBearerAuth({ "x-tokenName": "Authorization", type: "http" }, "Token")
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
     deepScanRoutes: true,
   });
 
-  SwaggerModule.setup('swagger', app, swaggerDocument, {
+  SwaggerModule.setup("swagger", app, swaggerDocument, {
     explorer: true,
     swaggerOptions: {
       persistAuthorization: true,
@@ -36,7 +36,7 @@ async function bootstrap() {
 
   const wsConf = app.get<ConfigType<typeof wsConfig>>(wsConfig.KEY);
   const logger = app.get(PinoLogger);
-  const bootstrapLogger = new Logger('Bootstrap');
+  const bootstrapLogger = new Logger("Bootstrap");
 
   app.useLogger(logger);
   app.enableCors();
@@ -46,7 +46,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       transform: true,
-    }),
+    })
   );
   setUpSwagger(app);
 
@@ -56,7 +56,7 @@ async function bootstrap() {
   await redisIoAdapter.connectToRedis();
   app.useWebSocketAdapter(redisIoAdapter);
 
-  app.enableShutdownHooks(['SIGINT', 'SIGTERM']);
+  app.enableShutdownHooks(["SIGINT", "SIGTERM"]);
 
   const httpConf = app.get<ConfigType<typeof httpConfig>>(httpConfig.KEY);
   bootstrapLogger.log(`Starting app on port ${httpConf.port}`);

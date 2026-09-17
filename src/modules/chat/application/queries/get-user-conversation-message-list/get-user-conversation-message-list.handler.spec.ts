@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { GetUserConversationMessageListHandler } from './get-user-conversation-message-list.handler';
-import { GetUserConversationMessageListQuery } from './get-user-conversation-message-list.query';
-import { ConversationReadRepositoryPort } from '@modules/chat/application/ports/conversation-read-repository.port';
-import { PaginatedResult } from '@common/pagination/pagination.interface';
-import { MessageReadDto } from '@modules/chat/application/dtos/message-read.dto';
+import { PaginatedResult } from "@common/pagination/pagination.interface";
+import { MessageReadDto } from "@modules/chat/application/dtos/message-read.dto";
+import { ConversationReadRepositoryPort } from "@modules/chat/application/ports/conversation-read-repository.port";
+import { Test, TestingModule } from "@nestjs/testing";
+import { GetUserConversationMessageListHandler } from "./get-user-conversation-message-list.handler";
+import { GetUserConversationMessageListQuery } from "./get-user-conversation-message-list.query";
 
-describe('GetUserConversationMessageListHandler', () => {
+describe("GetUserConversationMessageListHandler", () => {
   let handler: GetUserConversationMessageListHandler;
   let queryRepo: jest.Mocked<ConversationReadRepositoryPort>;
 
@@ -25,20 +25,20 @@ describe('GetUserConversationMessageListHandler', () => {
     }).compile();
 
     handler = module.get<GetUserConversationMessageListHandler>(
-      GetUserConversationMessageListHandler,
+      GetUserConversationMessageListHandler
     );
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(handler).toBeDefined();
   });
 
-  describe('execute', () => {
-    it('should return paginated message list', async () => {
+  describe("execute", () => {
+    it("should return paginated message list", async () => {
       const query = new GetUserConversationMessageListQuery(
-        'conv-1',
-        'user-1',
-        { page: 1, pageSize: 10, limit: 10, offset: 0 },
+        "conv-1",
+        "user-1",
+        { page: 1, pageSize: 10, limit: 10, offset: 0 }
       );
       const expectedResult: PaginatedResult<MessageReadDto> = {
         data: [],
@@ -53,15 +53,15 @@ describe('GetUserConversationMessageListHandler', () => {
       };
 
       queryRepo.getUserConversationMessageList.mockResolvedValue(
-        expectedResult,
+        expectedResult
       );
 
       const result = await handler.execute(query);
 
       expect(queryRepo.getUserConversationMessageList).toHaveBeenCalledWith(
-        'conv-1',
-        'user-1',
-        { page: 1, pageSize: 10, limit: 10, offset: 0 },
+        "conv-1",
+        "user-1",
+        { page: 1, pageSize: 10, limit: 10, offset: 0 }
       );
       expect(result).toEqual(expectedResult);
     });

@@ -1,13 +1,12 @@
-import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { GetUserConversationIdsQuery } from './get-user-conversation-ids.query';
-import { Logger } from '@nestjs/common';
-import { ConversationReadRepositoryPort } from '@modules/chat/application/ports/conversation-read-repository.port';
+import { ConversationReadRepositoryPort } from "@modules/chat/application/ports/conversation-read-repository.port";
+import { Logger } from "@nestjs/common";
+import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
+import { GetUserConversationIdsQuery } from "./get-user-conversation-ids.query";
 
 @QueryHandler(GetUserConversationIdsQuery)
-export class GetUserConversationIdsHandler implements IQueryHandler<
-  GetUserConversationIdsQuery,
-  string[]
-> {
+export class GetUserConversationIdsHandler
+  implements IQueryHandler<GetUserConversationIdsQuery, string[]>
+{
   private readonly logger = new Logger(GetUserConversationIdsHandler.name);
 
   constructor(private readonly queryRepo: ConversationReadRepositoryPort) {}
@@ -19,7 +18,7 @@ export class GetUserConversationIdsHandler implements IQueryHandler<
 
     const conversationIds = await this.queryRepo.getUserConversationIds(
       userId,
-      options,
+      options
     );
 
     return conversationIds;

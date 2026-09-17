@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConversationPostgresRepository } from './conversation-postgres.repository';
-import { getDataSourceToken } from '@nestjs/typeorm';
-import { DatabaseType } from '@infrastructure/database/database-type.enum';
-import { Conversation } from '../entities/conversation.entity';
-import { ConversationEntity } from '@modules/chat/domain/models/conversation.model';
-import { ConversationType } from '@modules/chat/domain/enums/conversation-type.enum';
-import { MessageEntity } from '@modules/chat/domain/models/message.entity';
-import { MessageType } from '@modules/chat/domain/enums/chat-type.enum';
+import { DatabaseType } from "@infrastructure/database/database-type.enum";
+import { MessageType } from "@modules/chat/domain/enums/chat-type.enum";
+import { ConversationType } from "@modules/chat/domain/enums/conversation-type.enum";
+import { ConversationEntity } from "@modules/chat/domain/models/conversation.model";
+import { MessageEntity } from "@modules/chat/domain/models/message.entity";
+import { Test, TestingModule } from "@nestjs/testing";
+import { getDataSourceToken } from "@nestjs/typeorm";
+import { Conversation } from "../entities/conversation.entity";
+import { ConversationPostgresRepository } from "./conversation-postgres.repository";
 
-describe('ConversationPostgresRepository', () => {
+describe("ConversationPostgresRepository", () => {
   let repository: ConversationPostgresRepository;
   let dataSourceMock: any;
   let queryBuilderMock: any;
@@ -38,9 +38,9 @@ describe('ConversationPostgresRepository', () => {
 
     dataSourceMock = {
       getRepository: jest.fn().mockReturnValue(repoMock),
-      transaction: jest.fn().mockImplementation(async (cb) => {
-        return cb(entityManagerMock);
-      }),
+      transaction: jest
+        .fn()
+        .mockImplementation(async (cb) => cb(entityManagerMock)),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -54,24 +54,24 @@ describe('ConversationPostgresRepository', () => {
     }).compile();
 
     repository = module.get<ConversationPostgresRepository>(
-      ConversationPostgresRepository,
+      ConversationPostgresRepository
     );
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(repository).toBeDefined();
   });
 
-  describe('getConversationById', () => {
-    it('should return null if not found', async () => {
+  describe("getConversationById", () => {
+    it("should return null if not found", async () => {
       repoMock.findOne.mockResolvedValue(null);
-      const result = await repository.getConversationById('conv-1');
+      const result = await repository.getConversationById("conv-1");
       expect(result).toBeNull();
     });
 
-    it('should return domain entity if found', async () => {
+    it("should return domain entity if found", async () => {
       const conv = new Conversation();
-      conv.id = 'conv-1';
+      conv.id = "conv-1";
       conv.type = ConversationType.DIRECT;
       conv.created_at = new Date();
       conv.updated_at = new Date();
@@ -79,18 +79,18 @@ describe('ConversationPostgresRepository', () => {
 
       repoMock.findOne.mockResolvedValue(conv);
 
-      const result = await repository.getConversationById('conv-1');
+      const result = await repository.getConversationById("conv-1");
       expect(result).toBeInstanceOf(ConversationEntity);
-      expect(result?.id).toBe('conv-1');
+      expect(result?.id).toBe("conv-1");
     });
   });
 
-  describe('saveConversation', () => {
-    it('should save and return conversation', async () => {
-      const conv = ConversationEntity.createDirect('user-1', 'user-2');
+  describe("saveConversation", () => {
+    it("should save and return conversation", async () => {
+      const conv = ConversationEntity.createDirect("user-1", "user-2");
       entityManagerMock.save.mockImplementation(async (entity) => entity);
       entityManagerMock.findOne.mockResolvedValue(
-        Conversation.fromDomain(conv),
+        Conversation.fromDomain(conv)
       );
 
       const result = await repository.saveConversation(conv);
@@ -101,19 +101,19 @@ describe('ConversationPostgresRepository', () => {
     });
   });
 
-  describe('saveMessage', () => {
-    it('should save message and update members', async () => {
+  describe("saveMessage", () => {
+    it("should save message and update members", async () => {
       const msg = MessageEntity.create(
-        'hello',
+        "hello",
         MessageType.TEXT,
-        'user-1',
-        'conv-1',
-        ['user-2'],
+        "user-1",
+        "conv-1",
+        ["user-2"]
       );
       entityManagerMock.save.mockImplementation(async (entity) => entity);
       queryBuilderMock.getMany.mockResolvedValue([
-        { user_id: 'user-1' },
-        { user_id: 'user-2' },
+        { user_id: "user-1" },
+        { user_id: "user-2" },
       ]);
 
       const result = await repository.saveMessage(msg);
@@ -124,10 +124,10 @@ describe('ConversationPostgresRepository', () => {
     });
   });
 
-  describe('deleteConversation', () => {
-    it('should delete conversation and return true', async () => {
+  describe("deleteConversation", () => {
+    it("should delete conversation and return true", async () => {
       queryBuilderMock.execute.mockResolvedValue({ affected: 1 });
-      const result = await repository.deleteConversation('conv-1');
+      const result = await repository.deleteConversation("conv-1");
       expect(result).toBe(true);
     });
   });

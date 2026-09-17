@@ -5,5 +5,60 @@
     "ultracite/biome/nestjs",
     "ultracite/biome/jest",
     "ultracite/biome/vitest"
-  ]
+  ],
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedKeys": "off",
+        "useSortedAttributes": "off",
+        "useSortedProperties": "off"
+      }
+    }
+  },
+  "linter": {
+    "rules": {
+      "style": {
+        "useImportType": "off", // Breaks Nest.js
+        "useConsistentMemberAccessibility": {
+          "level": "warn",
+          "options": {
+            "accessibility": "explicit"
+          }
+        },
+        "useDestructuring": "warn",
+        "useErrorCause": "warn",
+        "noDoneCallback": "warn",
+        "useFilenamingConvention": "off",
+        "noNonNullAssertion": "warn"
+      },
+      "correctness": {
+        "noUndeclaredVariables": "warn",
+        "noUnusedFunctionParameters": "warn"
+      },
+      "performance": {
+        "noAwaitInLoops": "warn",
+        "noBarrelFile": "warn",
+        "noNamespaceImport": "warn"
+      },
+      "suspicious": {
+        "noExplicitAny": "warn",
+        "useAwait": "warn",
+        "noUnnecessaryConditions": "warn",
+        "noImplicitAnyLet": "warn",
+        "noEvolvingTypes": "warn",
+        "useIterableCallbackReturn": "warn",
+        "useErrorMessage": "warn"
+      },
+      "complexity": {
+        "useLiteralKeys": "warn",
+        "noExcessiveCognitiveComplexity": "warn",
+        "noForEach": "warn"
+      }
+    }
+  }
 }

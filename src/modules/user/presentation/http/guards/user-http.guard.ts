@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { AuthIntegrationPort } from '@modules/user/application/ports/auth-integration.port';
-import { BaseHttpAuthGuard } from '@common/http/guards/base-http-auth.guard';
+import { BaseHttpAuthGuard } from "@common/http/guards/base-http-auth.guard";
+import { AuthIntegrationPort } from "@modules/user/application/ports/auth-integration.port";
+import { Injectable, Logger } from "@nestjs/common";
 
 @Injectable()
 export class UserHttpGuard extends BaseHttpAuthGuard {

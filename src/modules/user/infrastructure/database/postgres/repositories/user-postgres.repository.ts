@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entities/user.entity';
-import { DataSource, Repository } from 'typeorm';
-import { UserEntity } from '@modules/user/domain/models/user.model';
-import { DatabaseType } from '@infrastructure/database/database-type.enum';
-import { UserRepositoryPort } from '@modules/user/application/ports/user-repository.port';
-import { UserExistsOptions } from '@modules/user/application/ports/options/user-exists.options';
-import { UserBlock } from '@modules/user/infrastructure/database/postgres/entities/user-block.entity';
+import { DatabaseType } from "@infrastructure/database/database-type.enum";
+import { UserExistsOptions } from "@modules/user/application/ports/options/user-exists.options";
+import { UserRepositoryPort } from "@modules/user/application/ports/user-repository.port";
+import { UserEntity } from "@modules/user/domain/models/user.model";
+import { UserBlock } from "@modules/user/infrastructure/database/postgres/entities/user-block.entity";
+import { Injectable } from "@nestjs/common";
+import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
+import { DataSource, Repository } from "typeorm";
+import { User } from "../entities/user.entity";
 
 @Injectable()
 export class UserPostgresRepository implements UserRepositoryPort {
@@ -16,7 +16,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     @InjectRepository(UserBlock, DatabaseType.POSTGRES)
     private readonly userBlockRepository: Repository<UserBlock>,
     @InjectDataSource(DatabaseType.POSTGRES)
-    private readonly dataSource: DataSource,
+    private readonly dataSource: DataSource
   ) {}
 
   async save(userEntity: UserEntity): Promise<UserEntity> {
@@ -26,8 +26,8 @@ export class UserPostgresRepository implements UserRepositoryPort {
 
   async getUserByEmail(email: string): Promise<UserEntity | null> {
     const res = await this.userRepository
-      .createQueryBuilder('u')
-      .where('u.email = :email', { email })
+      .createQueryBuilder("u")
+      .where("u.email = :email", { email })
       .getOne();
 
     return res ? User.toEntity(res) : null;
@@ -35,8 +35,8 @@ export class UserPostgresRepository implements UserRepositoryPort {
 
   async getUserById(id: string): Promise<UserEntity | null> {
     const res = await this.userRepository
-      .createQueryBuilder('u')
-      .where('u.id = :id', { id })
+      .createQueryBuilder("u")
+      .where("u.id = :id", { id })
       .getOne();
 
     return res ? User.toEntity(res) : null;
@@ -44,35 +44,37 @@ export class UserPostgresRepository implements UserRepositoryPort {
 
   async getUserByUsername(username: string): Promise<UserEntity | null> {
     const res = await this.userRepository
-      .createQueryBuilder('u')
-      .where('u.username = :username', { username })
+      .createQueryBuilder("u")
+      .where("u.username = :username", { username })
       .getOne();
 
     return res ? User.toEntity(res) : null;
   }
 
   async userExists(options: UserExistsOptions): Promise<boolean> {
-    const query = this.userRepository.createQueryBuilder('user');
+    const query = this.userRepository.createQueryBuilder("user");
 
-    if (options.email)
-      query.where('user.email = :email', { email: options.email });
-    if (options.username)
-      query.orWhere('user.username = :username', {
+    if (options.email) {
+      query.where("user.email = :email", { email: options.email });
+    }
+    if (options.username) {
+      query.orWhere("user.username = :username", {
         username: options.username,
       });
+    }
 
     return query.getExists();
   }
 
   async getUserIdsByNameOrUsername(
-    nameOrUsernameFilter: string,
+    nameOrUsernameFilter: string
   ): Promise<string[]> {
     const res = await this.userRepository
-      .createQueryBuilder('u')
-      .select('u.id', 'id')
-      .where('u.first_name ILIKE :filter')
-      .orWhere('u.last_name ILIKE :filter')
-      .orWhere('u.username ILIKE :filter')
+      .createQueryBuilder("u")
+      .select("u.id", "id")
+      .where("u.first_name ILIKE :filter")
+      .orWhere("u.last_name ILIKE :filter")
+      .orWhere("u.username ILIKE :filter")
       .setParameters({
         filter: `%${nameOrUsernameFilter}%`,
       })
@@ -83,8 +85,8 @@ export class UserPostgresRepository implements UserRepositoryPort {
 
   async getUsersByIds(userIds: string[]): Promise<UserEntity[]> {
     const res = await this.userRepository
-      .createQueryBuilder('u')
-      .where('u.id IN (:...userIds)', { userIds })
+      .createQueryBuilder("u")
+      .where("u.id IN (:...userIds)", { userIds })
       .getMany();
 
     return res.map((u) => User.toEntity(u));
@@ -94,11 +96,11 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return this.dataSource.transaction(async (entityManager) => {
       const status = await entityManager
         .getRepository(UserBlock)
-        .createQueryBuilder('ub')
-        .where('blocker_id = :blockerId', { blockerId })
-        .andWhere('blocked_id = :blockedId', { blockedId })
+        .createQueryBuilder("ub")
+        .where("blocker_id = :blockerId", { blockerId })
+        .andWhere("blocked_id = :blockedId", { blockedId })
         .getExists();
-      if (status == true) {
+      if (status === true) {
         return false;
       }
 
@@ -115,8 +117,8 @@ export class UserPostgresRepository implements UserRepositoryPort {
   async unblock(blockerId: string, blockedId: string): Promise<boolean> {
     const res = await this.userBlockRepository
       .createQueryBuilder()
-      .where('blocker_id = :blockerId', { blockerId })
-      .andWhere('blocked_id = :blockedId', { blockedId })
+      .where("blocker_id = :blockerId", { blockerId })
+      .andWhere("blocked_id = :blockedId", { blockedId })
       .softDelete()
       .execute();
 
@@ -125,23 +127,23 @@ export class UserPostgresRepository implements UserRepositoryPort {
 
   async getBlockStatus(blockerId: string, blockedId: string): Promise<boolean> {
     return this.userBlockRepository
-      .createQueryBuilder('ub')
-      .where('blocker_id = :blockerId', { blockerId })
-      .andWhere('blocked_id = :blockedId', { blockedId })
+      .createQueryBuilder("ub")
+      .where("blocker_id = :blockerId", { blockerId })
+      .andWhere("blocked_id = :blockedId", { blockedId })
       .getExists();
   }
 
   async getBlockedUserIds(
     blockerId: string,
-    blockedIds?: string[],
+    blockedIds?: string[]
   ): Promise<string[]> {
     const query = this.userBlockRepository
-      .createQueryBuilder('ub')
-      .select('blocked_id', 'blockedId')
-      .where('blocker_id = :userId', { userId: blockerId }); // Fix from :userId to match param, was previously bugged? Ah, in target it was userId
+      .createQueryBuilder("ub")
+      .select("blocked_id", "blockedId")
+      .where("blocker_id = :userId", { userId: blockerId }); // Fix from :userId to match param, was previously bugged? Ah, in target it was userId
 
     if (blockedIds?.length) {
-      query.andWhere('blocked_id IN (:...blockedIds)', { blockedIds }); // Fixed missing 's'
+      query.andWhere("blocked_id IN (:...blockedIds)", { blockedIds }); // Fixed missing 's'
     }
 
     const res = await query.getRawMany<any>();

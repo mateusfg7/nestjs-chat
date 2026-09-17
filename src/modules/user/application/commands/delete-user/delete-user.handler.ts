@@ -1,7 +1,7 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { DeleteUserCommand } from './delete-user.command';
-import { Logger } from '@nestjs/common';
-import { UserRepositoryPort } from '@modules/user/application/ports/user-repository.port';
+import { UserRepositoryPort } from "@modules/user/application/ports/user-repository.port";
+import { Logger } from "@nestjs/common";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { DeleteUserCommand } from "./delete-user.command";
 
 @CommandHandler(DeleteUserCommand)
 export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
@@ -12,12 +12,12 @@ export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
   async execute(command: DeleteUserCommand): Promise<void> {
     this.logger.log(`Deleting user with ID: ${command.id}`);
     const deleted = await this.userRepository.delete(command.id);
-    if (!deleted) {
-      this.logger.warn(
-        `User with ID ${command.id} not found or could not be deleted.`,
-      );
-    } else {
+    if (deleted) {
       this.logger.log(`Successfully deleted user ${command.id}.`);
+    } else {
+      this.logger.warn(
+        `User with ID ${command.id} not found or could not be deleted.`
+      );
     }
   }
 }

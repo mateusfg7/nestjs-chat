@@ -1,9 +1,8 @@
-import { MessageEntity } from '@modules/chat/domain/models/message.entity';
-import { ConversationType } from '@modules/chat/domain/enums/conversation-type.enum';
-import { ConversationMemberEntity } from '@modules/chat/domain/models/conversation-member.model';
-import { v7 as uuidv7 } from 'uuid';
-
-import { AggregateRoot } from '@common/domain/aggregate-root';
+import { AggregateRoot } from "@common/domain/aggregate-root";
+import { ConversationType } from "@modules/chat/domain/enums/conversation-type.enum";
+import { ConversationMemberEntity } from "@modules/chat/domain/models/conversation-member.model";
+import { MessageEntity } from "@modules/chat/domain/models/message.entity";
+import { v7 as uuidv7 } from "uuid";
 
 export class ConversationEntity extends AggregateRoot<string> {
   private readonly _title: string | null;
@@ -30,7 +29,7 @@ export class ConversationEntity extends AggregateRoot<string> {
   // Domain Behaviors
   public addMember(member: ConversationMemberEntity): void {
     if (this._type === ConversationType.DIRECT && this._members.length >= 2) {
-      throw new Error('Direct conversations can only have 2 members');
+      throw new Error("Direct conversations can only have 2 members");
     }
     if (!this._members.some((m) => m.userId === member.userId)) {
       this._members.push(member);
@@ -63,7 +62,7 @@ export class ConversationEntity extends AggregateRoot<string> {
     title: string | null = null,
     picture: string | null = null,
     identifier: string | null = null,
-    deletedAt?: Date,
+    deletedAt?: Date
   ) {
     super(id, createdAt, updatedAt);
     this._type = type;
@@ -75,7 +74,7 @@ export class ConversationEntity extends AggregateRoot<string> {
 
   public static createDirect(
     userId: string,
-    targetUserId: string,
+    targetUserId: string
   ): ConversationEntity {
     const id = uuidv7();
     const conversation = new ConversationEntity(
@@ -85,7 +84,7 @@ export class ConversationEntity extends AggregateRoot<string> {
       ConversationType.DIRECT,
       null,
       null,
-      uuidv7(),
+      uuidv7()
     );
 
     conversation.addMember(ConversationMemberEntity.create(userId, id));
@@ -104,7 +103,7 @@ export class ConversationEntity extends AggregateRoot<string> {
     identifier: string | null,
     createdAt: Date,
     updatedAt: Date,
-    deletedAt?: Date,
+    deletedAt?: Date
   ): ConversationEntity {
     return new ConversationEntity(
       id,
@@ -114,7 +113,7 @@ export class ConversationEntity extends AggregateRoot<string> {
       title,
       picture,
       identifier,
-      deletedAt,
+      deletedAt
     );
   }
 

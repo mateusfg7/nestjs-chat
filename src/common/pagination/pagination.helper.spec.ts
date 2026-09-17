@@ -1,26 +1,26 @@
-import { PaginationHelper } from './pagination.helper';
+import { PaginationHelper } from "./pagination.helper";
 
-describe('PaginationHelper', () => {
-  describe('parse', () => {
-    it('should parse valid page and pageSize', () => {
-      const result = PaginationHelper.parse('2', '20');
+describe("PaginationHelper", () => {
+  describe("parse", () => {
+    it("should parse valid page and pageSize", () => {
+      const result = PaginationHelper.parse("2", "20");
       expect(result).toEqual({ page: 2, pageSize: 20, limit: 20, offset: 20 });
     });
 
-    it('should fall back to defaults for invalid or missing values', () => {
+    it("should fall back to defaults for invalid or missing values", () => {
       expect(PaginationHelper.parse(undefined, undefined)).toEqual({
         page: 1,
         pageSize: 15,
         limit: 15,
         offset: 0,
       });
-      expect(PaginationHelper.parse('invalid', 'invalid')).toEqual({
+      expect(PaginationHelper.parse("invalid", "invalid")).toEqual({
         page: 1,
         pageSize: 15,
         limit: 15,
         offset: 0,
       });
-      expect(PaginationHelper.parse('-1', '0')).toEqual({
+      expect(PaginationHelper.parse("-1", "0")).toEqual({
         page: 1,
         pageSize: 1,
         limit: 1,
@@ -29,8 +29,8 @@ describe('PaginationHelper', () => {
     });
   });
 
-  describe('createResult', () => {
-    it('should calculate metadata correctly', () => {
+  describe("createResult", () => {
+    it("should calculate metadata correctly", () => {
       const result = PaginationHelper.createResult([{ id: 1 }, { id: 2 }], 10, {
         page: 1,
         pageSize: 2,
@@ -48,7 +48,7 @@ describe('PaginationHelper', () => {
       });
     });
 
-    it('should handle edge cases', () => {
+    it("should handle edge cases", () => {
       const result = PaginationHelper.createResult([], 0, {
         page: 2,
         pageSize: 10,

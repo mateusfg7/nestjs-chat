@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CreateDirectConversationHandler } from './create-direct-conversation.handler';
-import { ConversationRepositoryPort } from '@modules/chat/application/ports/conversation-repository.port';
-import { ConversationReadRepositoryPort } from '@modules/chat/application/ports/conversation-read-repository.port';
-import { UserIntegrationPort } from '@modules/chat/application/ports/user-integration.port';
-import { EventPublisher } from '@nestjs/cqrs';
-import { CreateDirectConversationCommand } from './create-direct-conversation.command';
+import { ConversationReadRepositoryPort } from "@modules/chat/application/ports/conversation-read-repository.port";
+import { ConversationRepositoryPort } from "@modules/chat/application/ports/conversation-repository.port";
+import { UserIntegrationPort } from "@modules/chat/application/ports/user-integration.port";
 import {
   BlockedUserException,
   ConversationAlreadyExistsException,
   TargetUserNotFoundException,
-} from '@modules/chat/domain/chat.exceptions';
-import { ConversationEntity } from '@modules/chat/domain/models/conversation.model';
+} from "@modules/chat/domain/chat.exceptions";
+import { ConversationEntity } from "@modules/chat/domain/models/conversation.model";
+import { EventPublisher } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import { CreateDirectConversationCommand } from "./create-direct-conversation.command";
+import { CreateDirectConversationHandler } from "./create-direct-conversation.handler";
 
-describe('CreateDirectConversationHandler', () => {
+describe("CreateDirectConversationHandler", () => {
   let handler: CreateDirectConversationHandler;
   let commandRepo: jest.Mocked<ConversationRepositoryPort>;
   let queryRepo: jest.Mocked<ConversationReadRepositoryPort>;
@@ -60,48 +60,48 @@ describe('CreateDirectConversationHandler', () => {
     }).compile();
 
     handler = module.get<CreateDirectConversationHandler>(
-      CreateDirectConversationHandler,
+      CreateDirectConversationHandler
     );
   });
 
-  it('should throw TargetUserNotFoundException if target user does not exist', async () => {
+  it("should throw TargetUserNotFoundException if target user does not exist", async () => {
     userIntegrationPort.doesUserExist.mockResolvedValue(false);
-    const command = new CreateDirectConversationCommand('user-1', 'user-2');
+    const command = new CreateDirectConversationCommand("user-1", "user-2");
 
     await expect(handler.execute(command)).rejects.toThrow(
-      TargetUserNotFoundException,
+      TargetUserNotFoundException
     );
   });
 
-  it('should throw BlockedUserException if there is a block relation', async () => {
+  it("should throw BlockedUserException if there is a block relation", async () => {
     userIntegrationPort.doesUserExist.mockResolvedValue(true);
     userIntegrationPort.hasBlockRelation.mockResolvedValue(true);
-    const command = new CreateDirectConversationCommand('user-1', 'user-2');
+    const command = new CreateDirectConversationCommand("user-1", "user-2");
 
     await expect(handler.execute(command)).rejects.toThrow(
-      BlockedUserException,
+      BlockedUserException
     );
   });
 
-  it('should throw ConversationAlreadyExistsException if conversation already exists', async () => {
+  it("should throw ConversationAlreadyExistsException if conversation already exists", async () => {
     userIntegrationPort.doesUserExist.mockResolvedValue(true);
     userIntegrationPort.hasBlockRelation.mockResolvedValue(false);
     queryRepo.conversationExists.mockResolvedValue(true);
-    const command = new CreateDirectConversationCommand('user-1', 'user-2');
+    const command = new CreateDirectConversationCommand("user-1", "user-2");
 
     await expect(handler.execute(command)).rejects.toThrow(
-      ConversationAlreadyExistsException,
+      ConversationAlreadyExistsException
     );
   });
 
-  it('should successfully create a direct conversation', async () => {
+  it("should successfully create a direct conversation", async () => {
     userIntegrationPort.doesUserExist.mockResolvedValue(true);
     userIntegrationPort.hasBlockRelation.mockResolvedValue(false);
     queryRepo.conversationExists.mockResolvedValue(false);
 
     commandRepo.saveConversation.mockImplementation(async (conv) => conv);
 
-    const command = new CreateDirectConversationCommand('user-1', 'user-2');
+    const command = new CreateDirectConversationCommand("user-1", "user-2");
     const result = await handler.execute(command);
 
     expect(result).toBeInstanceOf(ConversationEntity);

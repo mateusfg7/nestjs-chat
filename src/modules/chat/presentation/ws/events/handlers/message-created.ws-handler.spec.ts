@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MessageCreatedWsEventHandler } from './message-created.ws-handler';
-import { ChatWsGateway } from '@modules/chat/presentation/ws/chat-ws.gateway';
-import { UserIntegrationPort } from '@modules/chat/application/ports/user-integration.port';
-import { QueryBus } from '@nestjs/cqrs';
-import { ConversationRepositoryPort } from '@modules/chat/application/ports/conversation-repository.port';
-import { MessageCreatedDomainEvent } from '@modules/chat/contracts/events';
+import { ConversationRepositoryPort } from "@modules/chat/application/ports/conversation-repository.port";
+import { UserIntegrationPort } from "@modules/chat/application/ports/user-integration.port";
+import { MessageCreatedDomainEvent } from "@modules/chat/contracts/events";
+import { ChatWsGateway } from "@modules/chat/presentation/ws/chat-ws.gateway";
+import { QueryBus } from "@nestjs/cqrs";
+import { Test, TestingModule } from "@nestjs/testing";
+import { MessageCreatedWsEventHandler } from "./message-created.ws-handler";
 
-describe('MessageCreatedWsEventHandler', () => {
+describe("MessageCreatedWsEventHandler", () => {
   let handler: MessageCreatedWsEventHandler;
   let chatWsGateway: jest.Mocked<ChatWsGateway>;
   let userIntegrationPort: jest.Mocked<UserIntegrationPort>;
@@ -40,36 +40,36 @@ describe('MessageCreatedWsEventHandler', () => {
     }).compile();
 
     handler = module.get<MessageCreatedWsEventHandler>(
-      MessageCreatedWsEventHandler,
+      MessageCreatedWsEventHandler
     );
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(handler).toBeDefined();
   });
 
-  describe('handle', () => {
-    it('should broadcast message to target user room', async () => {
+  describe("handle", () => {
+    it("should broadcast message to target user room", async () => {
       const event = new MessageCreatedDomainEvent(
-        'msg-1',
-        'conv-1',
-        'member-1',
-        'hello',
+        "msg-1",
+        "conv-1",
+        "member-1",
+        "hello",
         [],
-        new Date(),
+        new Date()
       );
 
       commandRepo.getConversationById = jest.fn().mockResolvedValue({
-        id: 'conv-1',
+        id: "conv-1",
         members: [
-          { id: 'member-1', userId: 'user-1' },
-          { id: 'member-2', userId: 'user-2' },
+          { id: "member-1", userId: "user-1" },
+          { id: "member-2", userId: "user-2" },
         ],
       });
 
       queryBus.execute.mockResolvedValue({
-        id: 'conv-1',
-        members: [{ userId: 'user-1' }, { userId: 'user-2' }],
+        id: "conv-1",
+        members: [{ userId: "user-1" }, { userId: "user-2" }],
       });
 
       userIntegrationPort.getUserById.mockImplementation(
@@ -77,10 +77,10 @@ describe('MessageCreatedWsEventHandler', () => {
           ({
             id,
             username: `username-${id}`,
-            firstName: 'First',
-            lastName: 'Last',
+            firstName: "First",
+            lastName: "Last",
             avatar: null,
-          }) as any,
+          }) as any
       );
 
       await handler.handle(event);
