@@ -6,7 +6,7 @@ Chatterbox is a real-time chat application built with NestJS, designed for scala
 
 ## Features
 
-- **Real-time Messaging:** Utilizes WebSockets (*Socket.IO*) for instant message delivery.
+- **Real-time Messaging:** Utilizes WebSockets (_Socket.IO_) for instant message delivery.
 - **Scalable Architecture:** Leverages Redis with `@socket.io/redis-adapter` for multi-instance WebSocket scaling.
 - **Authentication & Authorization:** Secure JWT-based authentication (access and refresh tokens) using RSA keys.
 - **Database:** PostgreSQL managed with TypeORM, including support for migrations.
@@ -23,14 +23,16 @@ Chatterbox is a real-time chat application built with NestJS, designed for scala
 Before you begin, ensure you have the following installed:
 
 - [Node.js](https://nodejs.org/) (v18.x or later recommended)
-- [yarn](https://yarnpkg.com/) *(The project uses Yarn v4, you may need to run `corepack enable`)*
-- [OpenSSL](https://www.openssl.org/) *(for generating RSA keys)*
+- [pnpm](https://pnpm.io/) _(The project uses pnpm v11)_
+- [OpenSSL](https://www.openssl.org/) _(for generating RSA keys)_
 
 **If running locally (without Docker):**
+
 - [PostgreSQL](https://www.postgresql.org/) (v13.x or later)
 - [Redis](https://redis.io/) (v6.x or later)
 
 **If using Docker (Recommended):**
+
 - [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/)
 
 ---
@@ -47,7 +49,7 @@ Before you begin, ensure you have the following installed:
 2. **Install dependencies:**
 
    ```bash
-   yarn install
+   pnpm install
    ```
 
 3. **Set up environment variables:**
@@ -77,10 +79,10 @@ Before you begin, ensure you have the following installed:
    Run database migrations to create the necessary tables:
 
    ```bash
-   yarn migration:run
+   pnpm migration:run
    ```
 
-   *(**Note:** If using Docker Compose, you will run migrations inside the container as shown in the next section.)*
+   _(**Note:** If using Docker Compose, you will run migrations inside the container as shown in the next section.)_
 
 ---
 
@@ -100,7 +102,7 @@ The easiest way to run the application along with its dependencies (PostgreSQL a
 3. Run database migrations inside the container:
 
    ```bash
-   docker-compose exec chatterbox yarn migration:run
+   docker-compose exec chatterbox pnpm migration:run
    ```
 
 The application will be available at `http://localhost:<PORT>` (as defined in your `.env`, default is `3000`).
@@ -112,20 +114,20 @@ If you prefer to run the application on your host machine, ensure PostgreSQL and
 - **Development Mode (with hot-reloading):**
 
   ```bash
-  yarn start:dev
+  pnpm start:dev
   ```
 
 - **Production Mode:**
 
   ```bash
-  yarn build
-  yarn start:prod
+  pnpm build
+  pnpm start:prod
   ```
 
 - **Debugging Mode:**
 
   ```bash
-  yarn start:debug
+  pnpm start:debug
   ```
 
 ---
@@ -135,25 +137,25 @@ If you prefer to run the application on your host machine, ensure PostgreSQL and
 - **Run all tests:**
 
   ```bash
-  yarn test
+  pnpm test
   ```
 
 - **Run tests in watch mode:**
 
   ```bash
-  yarn test:watch
+  pnpm test:watch
   ```
 
 - **Run tests with coverage report:**
 
   ```bash
-  yarn test:cov
+  pnpm test:cov
   ```
 
 - **Run End-to-End (E2E) tests:**
 
   ```bash
-  yarn test:e2e
+  pnpm test:e2e
   ```
 
 ---
@@ -164,7 +166,7 @@ Swagger API documentation is available once the application is running. Navigate
 
 `http://localhost:<PORT>/swagger`
 
-*(Replace `<PORT>` with the HTTP port specified in your `.env` file).*
+_(Replace `<PORT>` with the HTTP port specified in your `.env` file)._
 
 ---
 
@@ -172,28 +174,28 @@ Swagger API documentation is available once the application is running. Navigate
 
 The following environment variables need to be configured in your `.env` file:
 
-| Variable | Description |
-|---|---|
-| `POSTGRES_HOST` | PostgreSQL server host. |
-| `POSTGRES_PORT` | PostgreSQL server port. |
-| `POSTGRES_USERNAME` | PostgreSQL username. |
-| `POSTGRES_PASSWORD` | PostgreSQL password. |
-| `POSTGRES_DATABASE` | PostgreSQL database name. |
-| `POSTGRES_LOG` | Enable/disable TypeORM logging (`true`/`false`). |
-| `POSTGRES_SLOW_QUERY_LIMIT` | Slow query limit in milliseconds for logging. |
-| `LOG_USE_FILE` | Whether to log to a file (`true`/`false`). |
-| `LOG_FILE` | Path to the log file (if `LOG_USE_FILE` is `true`). |
-| `LOG_LEVEL` | Logging level (e.g., `debug`, `info`, `warn`, `error`). |
-| `PORT` | Port number for the HTTP server. |
-| `REDIS_HOST` | Redis server host. |
-| `REDIS_PORT` | Redis server port. |
-| `REDIS_USERNAME` | Redis username (if applicable). |
-| `REDIS_PASSWORD` | Redis password (if applicable). |
-| `WEBSOCKET_PORT` | Port number for the WebSocket server *(Note: NestJS integrates WS with HTTP port by default unless explicitly separated)*. |
-| `AUTH_ACCESS_PUBLIC_KEY_PATH` | Path to the access token public RSA key. |
-| `AUTH_ACCESS_PRIVATE_KEY_PATH` | Path to the access token private RSA key. |
-| `AUTH_REFRESH_PUBLIC_KEY_PATH` | Path to the refresh token public RSA key. |
-| `AUTH_REFRESH_PRIVATE_KEY_PATH` | Path to the refresh token private RSA key. |
+| Variable                        | Description                                                                                                                |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `POSTGRES_HOST`                 | PostgreSQL server host.                                                                                                    |
+| `POSTGRES_PORT`                 | PostgreSQL server port.                                                                                                    |
+| `POSTGRES_USERNAME`             | PostgreSQL username.                                                                                                       |
+| `POSTGRES_PASSWORD`             | PostgreSQL password.                                                                                                       |
+| `POSTGRES_DATABASE`             | PostgreSQL database name.                                                                                                  |
+| `POSTGRES_LOG`                  | Enable/disable TypeORM logging (`true`/`false`).                                                                           |
+| `POSTGRES_SLOW_QUERY_LIMIT`     | Slow query limit in milliseconds for logging.                                                                              |
+| `LOG_USE_FILE`                  | Whether to log to a file (`true`/`false`).                                                                                 |
+| `LOG_FILE`                      | Path to the log file (if `LOG_USE_FILE` is `true`).                                                                        |
+| `LOG_LEVEL`                     | Logging level (e.g., `debug`, `info`, `warn`, `error`).                                                                    |
+| `PORT`                          | Port number for the HTTP server.                                                                                           |
+| `REDIS_HOST`                    | Redis server host.                                                                                                         |
+| `REDIS_PORT`                    | Redis server port.                                                                                                         |
+| `REDIS_USERNAME`                | Redis username (if applicable).                                                                                            |
+| `REDIS_PASSWORD`                | Redis password (if applicable).                                                                                            |
+| `WEBSOCKET_PORT`                | Port number for the WebSocket server _(Note: NestJS integrates WS with HTTP port by default unless explicitly separated)_. |
+| `AUTH_ACCESS_PUBLIC_KEY_PATH`   | Path to the access token public RSA key.                                                                                   |
+| `AUTH_ACCESS_PRIVATE_KEY_PATH`  | Path to the access token private RSA key.                                                                                  |
+| `AUTH_REFRESH_PUBLIC_KEY_PATH`  | Path to the refresh token public RSA key.                                                                                  |
+| `AUTH_REFRESH_PRIVATE_KEY_PATH` | Path to the refresh token private RSA key.                                                                                 |
 
 ---
 

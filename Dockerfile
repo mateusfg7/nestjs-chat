@@ -1,18 +1,18 @@
 # syntax=docker/dockerfile:1
 FROM node:24-alpine AS base
 
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@11.13.0 --activate
 
 WORKDIR /app
 
 # ---- Dependencies Stage ----
 FROM base AS deps
 
-COPY package.json yarn.lock .yarnrc.yml* ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-RUN --mount=type=cache,target=/root/.yarn/berry/cache \
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     --mount=type=cache,target=/root/.cache \
-    yarn install --immutable
+    pnpm install --frozen-lockfile
 
 # ---- Build Stage ----
 FROM base AS build
@@ -20,16 +20,17 @@ FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN yarn build
+RUN pnpm build
 
 # ---- Production Dependencies Stage ----
 FROM base AS prod-deps
 
-COPY package.json yarn.lock .yarnrc.yml* ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-RUN --mount=type=cache,target=/root/.yarn/berry/cache \
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     --mount=type=cache,target=/root/.cache \
-    yarn workspaces focus --production && yarn cache clean
+    pnpm install --prod --frozen-lockfile --filter <package-name>... && \
+    pnpm store prune
 
 # ---- Release Stage ----
 FROM base AS release
