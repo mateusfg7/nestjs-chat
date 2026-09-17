@@ -27,7 +27,8 @@
     "migration:generate:chat": "pnpm build && typeorm-ts-node-commonjs migration:generate -d src/modules/chat/infrastructure/database/postgres/chat-data-source.ts src/modules/chat/infrastructure/database/postgres/migrations/Initial",
     "migration:generate:auth": "pnpm build && typeorm-ts-node-commonjs migration:generate -d src/modules/auth/infrastructure/database/postgres/auth-data-source.ts src/modules/auth/infrastructure/database/postgres/migrations/Initial",
     "migration:run": "pnpm build && pnpm typeorm migration:run",
-    "migration:revert": "pnpm typeorm migration:revert"
+    "migration:revert": "pnpm typeorm migration:revert",
+    "knip": "knip"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.27",
@@ -76,6 +77,7 @@
     "eslint-plugin-prettier": "^5.5.6",
     "globals": "^17.7.0",
     "jest": "^30.4.2",
+    "knip": "^6.36.0",
     "prettier": "^3.9.1",
     "socket.io-client": "^4.8.3",
     "source-map-support": "^0.5.21",
