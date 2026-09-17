@@ -10,7 +10,7 @@ import { User } from "../entities/user.entity";
 
 @Injectable()
 export class UserPostgresRepository implements UserRepositoryPort {
-  constructor(
+  public constructor(
     @InjectRepository(User, DatabaseType.POSTGRES)
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserBlock, DatabaseType.POSTGRES)
@@ -19,12 +19,12 @@ export class UserPostgresRepository implements UserRepositoryPort {
     private readonly dataSource: DataSource
   ) {}
 
-  async save(userEntity: UserEntity): Promise<UserEntity> {
+  public async save(userEntity: UserEntity): Promise<UserEntity> {
     const res = await this.userRepository.save(User.toOrm(userEntity));
     return User.toEntity(res);
   }
 
-  async getUserByEmail(email: string): Promise<UserEntity | null> {
+  public async getUserByEmail(email: string): Promise<UserEntity | null> {
     const res = await this.userRepository
       .createQueryBuilder("u")
       .where("u.email = :email", { email })
@@ -33,7 +33,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return res ? User.toEntity(res) : null;
   }
 
-  async getUserById(id: string): Promise<UserEntity | null> {
+  public async getUserById(id: string): Promise<UserEntity | null> {
     const res = await this.userRepository
       .createQueryBuilder("u")
       .where("u.id = :id", { id })
@@ -42,7 +42,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return res ? User.toEntity(res) : null;
   }
 
-  async getUserByUsername(username: string): Promise<UserEntity | null> {
+  public async getUserByUsername(username: string): Promise<UserEntity | null> {
     const res = await this.userRepository
       .createQueryBuilder("u")
       .where("u.username = :username", { username })
@@ -51,7 +51,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return res ? User.toEntity(res) : null;
   }
 
-  async userExists(options: UserExistsOptions): Promise<boolean> {
+  public userExists(options: UserExistsOptions): Promise<boolean> {
     const query = this.userRepository.createQueryBuilder("user");
 
     if (options.email) {
@@ -66,7 +66,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return query.getExists();
   }
 
-  async getUserIdsByNameOrUsername(
+  public async getUserIdsByNameOrUsername(
     nameOrUsernameFilter: string
   ): Promise<string[]> {
     const res = await this.userRepository
@@ -83,7 +83,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return res.map((row) => row.id);
   }
 
-  async getUsersByIds(userIds: string[]): Promise<UserEntity[]> {
+  public async getUsersByIds(userIds: string[]): Promise<UserEntity[]> {
     const res = await this.userRepository
       .createQueryBuilder("u")
       .where("u.id IN (:...userIds)", { userIds })
@@ -92,7 +92,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return res.map((u) => User.toEntity(u));
   }
 
-  async block(blockerId: string, blockedId: string): Promise<boolean> {
+  public block(blockerId: string, blockedId: string): Promise<boolean> {
     return this.dataSource.transaction(async (entityManager) => {
       const status = await entityManager
         .getRepository(UserBlock)
@@ -114,7 +114,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     });
   }
 
-  async unblock(blockerId: string, blockedId: string): Promise<boolean> {
+  public async unblock(blockerId: string, blockedId: string): Promise<boolean> {
     const res = await this.userBlockRepository
       .createQueryBuilder()
       .where("blocker_id = :blockerId", { blockerId })
@@ -125,7 +125,10 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return res.affected !== 0;
   }
 
-  async getBlockStatus(blockerId: string, blockedId: string): Promise<boolean> {
+  public getBlockStatus(
+    blockerId: string,
+    blockedId: string
+  ): Promise<boolean> {
     return this.userBlockRepository
       .createQueryBuilder("ub")
       .where("blocker_id = :blockerId", { blockerId })
@@ -133,7 +136,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
       .getExists();
   }
 
-  async getBlockedUserIds(
+  public async getBlockedUserIds(
     blockerId: string,
     blockedIds?: string[]
   ): Promise<string[]> {
@@ -151,7 +154,7 @@ export class UserPostgresRepository implements UserRepositoryPort {
     return res.map((r) => r.blockedId);
   }
 
-  async delete(id: string): Promise<boolean> {
+  public async delete(id: string): Promise<boolean> {
     const res = await this.userRepository.delete({ id });
     return res.affected !== 0;
   }
