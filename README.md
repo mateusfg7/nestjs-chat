@@ -9,7 +9,7 @@ Chatterbox is a real-time chat application built with NestJS, designed for scala
 - **Real-time Messaging:** Utilizes WebSockets (_Socket.IO_) for instant message delivery.
 - **Scalable Architecture:** Leverages Redis with `@socket.io/redis-adapter` for multi-instance WebSocket scaling.
 - **Authentication & Authorization:** Secure JWT-based authentication (access and refresh tokens) using RSA keys.
-- **Database:** PostgreSQL managed with TypeORM, including support for migrations.
+- **Database:** PostgreSQL managed with Drizzle, including support for migrations.
 - **API Documentation:** Swagger (OpenAPI) integration for easy API exploration and testing.
 - **Configuration Management:** Flexible configuration using `@nestjs/config` and `.env` files.
 - **Logging:** Comprehensive logging with Winston.
@@ -79,7 +79,7 @@ Before you begin, ensure you have the following installed:
    Run database migrations to create the necessary tables:
 
    ```bash
-   pnpm migration:run
+   pnpm db:migrate
    ```
 
    _(**Note:** If using Docker Compose, you will run migrations inside the container as shown in the next section.)_
@@ -102,7 +102,7 @@ The easiest way to run the application along with its dependencies (PostgreSQL a
 3. Run database migrations inside the container:
 
    ```bash
-   docker-compose exec chatterbox pnpm migration:run
+   docker-compose exec chatterbox pnpm db:migrate
    ```
 
 The application will be available at `http://localhost:<PORT>` (as defined in your `.env`, default is `3000`).
@@ -181,7 +181,6 @@ The following environment variables need to be configured in your `.env` file:
 | `POSTGRES_USERNAME`             | PostgreSQL username.                                                                                                       |
 | `POSTGRES_PASSWORD`             | PostgreSQL password.                                                                                                       |
 | `POSTGRES_DATABASE`             | PostgreSQL database name.                                                                                                  |
-| `POSTGRES_LOG`                  | Enable/disable TypeORM logging (`true`/`false`).                                                                           |
 | `POSTGRES_SLOW_QUERY_LIMIT`     | Slow query limit in milliseconds for logging.                                                                              |
 | `LOG_USE_FILE`                  | Whether to log to a file (`true`/`false`).                                                                                 |
 | `LOG_FILE`                      | Path to the log file (if `LOG_USE_FILE` is `true`).                                                                        |
@@ -217,7 +216,7 @@ A brief overview of the main directories in `src/`:
 - **`src/app.module.ts`**: Root module of the application.
 - **`src/application/`**: Contains core business logic, services, and use cases for different domains (e.g., `auth`, `chat`, `user`).
 - **`src/common/`**: Shared utilities, decorators, enums, constants, and base classes used across the application.
-- **`src/infrastructure/`**: Handles external concerns like database interactions (TypeORM entities, repositories), third-party service integrations (Redis, logging), and WebSocket adapters.
+- **`src/infrastructure/`**: Handles external concerns like database interactions (repositories), third-party service integrations (Redis, logging), and WebSocket adapters.
 - **`src/presentation/`**: Manages how the application interacts with the outside world. Includes HTTP controllers, WebSocket gateways, Data Transfer Objects (DTOs), and guards.
 
 ---

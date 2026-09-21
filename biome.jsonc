@@ -16,7 +16,8 @@
       "source": {
         "useSortedKeys": "off",
         "useSortedAttributes": "off",
-        "useSortedProperties": "off"
+        "useSortedProperties": "off",
+        "organizeImports": "on"
       }
     }
   },
@@ -38,11 +39,15 @@
       },
       "correctness": {
         "noUndeclaredVariables": "warn",
-        "noUnusedFunctionParameters": "warn"
+        "noUnusedFunctionParameters": "warn",
+        "noUnusedImports": {
+          "level": "error",
+          "fix": "safe"
+        }
       },
       "performance": {
         "noAwaitInLoops": "warn",
-        "noBarrelFile": "warn",
+        "noBarrelFile": "off",
         "noNamespaceImport": "warn"
       },
       "suspicious": {

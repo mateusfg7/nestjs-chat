@@ -1,5 +1,3 @@
-import { DatabaseModule } from "@infrastructure/database/database.module";
-import { DatabaseType } from "@infrastructure/database/database-type.enum";
 import { httpConfig } from "@infrastructure/http/http.config";
 import { LoggerModule } from "@infrastructure/logger/logger.module";
 import { RedisModule } from "@infrastructure/redis/redis.module";
@@ -19,7 +17,7 @@ import { appConfig } from "./app.config";
       load: [appConfig, httpConfig, wsConfig],
       cache: true,
     }),
-    DatabaseModule.register(DatabaseType.POSTGRES),
+
     LoggerModule.forRoot({ isGlobal: true }),
     RedisModule,
     UserModule,

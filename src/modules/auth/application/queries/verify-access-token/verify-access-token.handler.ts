@@ -8,9 +8,11 @@ import { VerifyAccessTokenQuery } from "./verify-access-token.query";
 export class VerifyAccessTokenHandler
   implements IQueryHandler<VerifyAccessTokenQuery, AccessTokenPayload>
 {
-  constructor(private readonly tokenService: TokenService) {}
+  public constructor(private readonly tokenService: TokenService) {}
 
-  async execute(query: VerifyAccessTokenQuery): Promise<AccessTokenPayload> {
+  public async execute(
+    query: VerifyAccessTokenQuery
+  ): Promise<AccessTokenPayload> {
     try {
       const payload =
         await this.tokenService.verifyAccessToken<AccessTokenPayload>(
@@ -18,6 +20,7 @@ export class VerifyAccessTokenHandler
         );
       return payload;
     } catch {
+      // biome-ignore lint/style/useErrorCause: Intentionally thrown custom error
       throw new UnauthorizedException("Invalid access token");
     }
   }

@@ -1,4 +1,4 @@
-import * as fs from "node:fs";
+import fs from "node:fs";
 import { registerAs } from "@nestjs/config";
 import { z } from "zod";
 

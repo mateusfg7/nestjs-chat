@@ -6,13 +6,13 @@ import { v4 as uuidV4 } from "uuid";
 
 @Injectable()
 export class TokenService {
-  constructor(
+  public constructor(
     @Inject(authConfig.KEY)
     private readonly authConf: ConfigType<typeof authConfig>,
     private readonly jwtService: JwtService
   ) {}
 
-  async signAccessToken(userId: string, role: string): Promise<string> {
+  public async signAccessToken(userId: string, role: string): Promise<string> {
     return await this.jwtService.signAsync(
       {
         sub: userId,
@@ -25,7 +25,7 @@ export class TokenService {
     );
   }
 
-  async signRefreshToken(
+  public async signRefreshToken(
     userId: string
   ): Promise<{ token: string; jti: string }> {
     const jti = uuidV4();
@@ -43,13 +43,17 @@ export class TokenService {
     return { token, jti };
   }
 
-  async verifyAccessToken<T extends object = any>(token: string): Promise<T> {
+  public async verifyAccessToken<T extends object = any>(
+    token: string
+  ): Promise<T> {
     return await this.jwtService.verifyAsync<T>(token, {
       publicKey: this.authConf.accessPublicKey,
     });
   }
 
-  async verifyRefreshToken<T extends object = any>(token: string): Promise<T> {
+  public async verifyRefreshToken<T extends object = any>(
+    token: string
+  ): Promise<T> {
     return await this.jwtService.verifyAsync<T>(token, {
       publicKey: this.authConf.refreshPublicKey,
     });

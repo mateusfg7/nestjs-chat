@@ -16,7 +16,7 @@ export class UserEntity extends AggregateRoot<string> {
   private _blockedUsers: Partial<UserEntity>[];
   private _deletedAt: Date | null;
 
-  constructor(
+  public constructor(
     id: string,
     createdAt: Date,
     updatedAt: Date,
@@ -79,31 +79,31 @@ export class UserEntity extends AggregateRoot<string> {
   }
 
   // Getters
-  get email(): string {
+  public get email(): string {
     return this._email;
   }
-  get username(): string {
+  public get username(): string {
     return this._username;
   }
-  get password(): string {
+  public get password(): string {
     return this._password;
   }
-  get firstName(): string {
+  public get firstName(): string {
     return this._firstName;
   }
-  get lastName(): string {
+  public get lastName(): string {
     return this._lastName;
   }
-  get role(): UserRole {
+  public get role(): UserRole {
     return this._role;
   }
-  get avatar(): string | null {
+  public get avatar(): string | null {
     return this._avatar;
   }
-  get blockedUsers(): Partial<UserEntity>[] {
+  public get blockedUsers(): Partial<UserEntity>[] {
     return this._blockedUsers;
   }
-  get deletedAt(): Date | null {
+  public get deletedAt(): Date | null {
     return this._deletedAt;
   }
 
@@ -128,7 +128,7 @@ export class UserEntity extends AggregateRoot<string> {
     if (!this._blockedUsers.find((u) => u.id === userToBlock.id)) {
       this._blockedUsers.push(userToBlock);
       this.updatedAt = new Date();
-      this.apply(new UserBlockedEvent(this.id, userToBlock.id!));
+      this.apply(new UserBlockedEvent(this.id, userToBlock.id as string));
     }
   }
 
@@ -139,7 +139,7 @@ export class UserEntity extends AggregateRoot<string> {
     );
     if (this._blockedUsers.length !== originalLength) {
       this.updatedAt = new Date();
-      this.apply(new UserUnblockedEvent(this.id, userToUnblock.id!));
+      this.apply(new UserUnblockedEvent(this.id, userToUnblock.id as string));
     }
   }
 
