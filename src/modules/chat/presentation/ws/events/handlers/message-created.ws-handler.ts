@@ -16,14 +16,14 @@ export class MessageCreatedWsEventHandler
 {
   private readonly logger = new Logger(MessageCreatedWsEventHandler.name);
 
-  constructor(
+  public constructor(
     private readonly chatWsGateway: ChatWsGateway,
     private readonly userIntegrationPort: UserIntegrationPort,
     private readonly queryBus: QueryBus,
     private readonly commandRepo: ConversationRepositoryPort
   ) {}
 
-  async handle(event: MessageCreatedDomainEvent) {
+  public async handle(event: MessageCreatedDomainEvent) {
     this.logger.debug(
       `Handling MessageCreatedDomainEvent for message ${event.messageId}`
     );
@@ -36,7 +36,7 @@ export class MessageCreatedWsEventHandler
       const convEntity = await this.commandRepo.getConversationById(
         event.conversationId
       );
-      const senderMember = convEntity.members.find(
+      const senderMember = convEntity?.members.find(
         (m) => m.id === event.senderId
       );
       if (!senderMember) {

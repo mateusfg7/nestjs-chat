@@ -5,40 +5,40 @@ export class SigninRequestBody {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  identifier: string;
+  public identifier: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  password: string;
+  public password: string;
 }
 
 export class SigninUserItem {
   @ApiProperty()
-  id: string;
+  public id: string;
 
   @ApiProperty()
-  firstName: string;
+  public firstName: string;
 
   @ApiProperty()
-  lastName: string;
+  public lastName: string;
 
   @ApiProperty()
-  createdAt: string;
+  public createdAt: string;
 }
 
 export class SigninTokenItem {
   @ApiProperty()
-  accessToken: string;
+  public accessToken: string;
 
   @ApiProperty()
-  refreshToken: string;
+  public refreshToken: string;
 }
 
 export class SigninResponse {
   @ApiProperty()
-  user: SigninUserItem;
+  public user: SigninUserItem;
 
   @ApiProperty()
-  tokens: SigninTokenItem;
+  public tokens: SigninTokenItem;
 }

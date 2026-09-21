@@ -13,9 +13,9 @@ export class ValidatePasswordHandler
 {
   private readonly logger = new Logger(ValidatePasswordHandler.name);
 
-  constructor(private readonly userRepository: UserReadRepositoryPort) {}
+  public constructor(private readonly userRepository: UserReadRepositoryPort) {}
 
-  async execute(query: ValidatePasswordQuery): Promise<UserReadDto> {
+  public async execute(query: ValidatePasswordQuery): Promise<UserReadDto> {
     let userRes: UserReadDto | null;
 
     const isEmail = validator.isEmail(query.property);

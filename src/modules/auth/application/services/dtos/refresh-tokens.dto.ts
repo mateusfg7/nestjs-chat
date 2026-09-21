@@ -1,4 +1,4 @@
-export class RefreshTokensOutput {
-  refreshToken: string;
+export interface RefreshTokensOutput {
   accessToken: string;
+  refreshToken: string;
 }

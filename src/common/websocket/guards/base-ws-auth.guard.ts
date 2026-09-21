@@ -8,7 +8,7 @@ export abstract class BaseWsAuthGuard implements CanActivate {
 
   protected abstract verifyToken(token: string): Promise<any>;
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  public async canActivate(context: ExecutionContext): Promise<boolean> {
     this.logger.debug("authenticating user...");
 
     const wsContext = context.switchToWs();
@@ -91,8 +91,8 @@ export abstract class BaseWsAuthGuard implements CanActivate {
     if (data && typeof data.ack === "function") {
       data.ack({ error: "Unauthorized", statusCode: 401 });
     }
-    client.data = null;
     client.disconnect(true);
+    client.data = null as unknown as ClientData;
     throw new WsException({ code: "UNAUTHENTICATED", message: "Unauthorized" });
   }
 }

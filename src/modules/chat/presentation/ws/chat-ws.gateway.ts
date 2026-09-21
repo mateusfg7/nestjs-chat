@@ -47,10 +47,10 @@ export class ChatWsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer()
-  server: Server;
+  public server: Server;
   private readonly logger = new Logger(ChatWsGateway.name);
 
-  constructor(
+  public constructor(
     private readonly chatWsGuard: ChatWsGuard,
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
@@ -59,15 +59,15 @@ export class ChatWsGateway
     super();
   }
 
-  getLogger(): Logger {
+  public getLogger(): Logger {
     return this.logger;
   }
 
-  afterInit() {
+  public afterInit() {
     this.logger.debug("Conversation gateway initialized successfully.");
   }
 
-  async handleConnection(client: Socket) {
+  public async handleConnection(client: Socket) {
     this.logger.debug(`New client connected. id: ${client.id}`);
 
     if (!client.data["authPromise"]) {
@@ -103,7 +103,7 @@ export class ChatWsGateway
     }
   }
 
-  handleDisconnect(client: Socket): void {
+  public handleDisconnect(client: Socket): void {
     const authUser = client.data?.user;
     if (authUser) {
       this.logger.log(`Client disconnected: ${authUser}`);
@@ -113,7 +113,7 @@ export class ChatWsGateway
   }
 
   @SubscribeMessage("conversation.create")
-  async createDirectConversation(
+  public async createDirectConversation(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: CreateConversationRequest,
     @CurrentUserId() authUserId: string
@@ -205,7 +205,7 @@ export class ChatWsGateway
   }
 
   @SubscribeMessage("conversation.list")
-  async getUserConversationList(
+  public async getUserConversationList(
     @MessageBody() data: GetUserConversationListRequest,
     @CurrentUserId() authUserId: string
   ): Promise<any> {
@@ -237,10 +237,12 @@ export class ChatWsGateway
 
     const conversationsUserIds = conversationList.data
       .map((c) => c.lastMessage?.senderId)
-      .filter((id) => id !== null);
+      .filter((id) => id !== null && id !== undefined);
+
     const allUsersInvolved = conversationList.data.flatMap((c) =>
       c.members.map((m) => m.userId)
     );
+
     allUsersInvolved.push(...conversationsUserIds);
     const uniqueUserIds = Array.from(new Set(allUsersInvolved)) as string[];
 
@@ -264,8 +266,9 @@ export class ChatWsGateway
                 user: null,
               }
             : null,
-          notSeenCount: currentMember.notSeenCount,
-        };
+          // notSeenCount: currentMember.notSeenCount,
+          notSeenCount: (currentMember as any).notSeenCount,
+        } as unknown as UserConversationListItem;
 
         if (item.type === ConversationType.DIRECT) {
           const otherMember = item.members.find(
@@ -314,7 +317,7 @@ export class ChatWsGateway
   }
 
   @SubscribeMessage("conversation.message.send")
-  async createMessage(
+  public async createMessage(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: CreateMessageRequest,
     @CurrentUserId() authUserId: string
@@ -364,7 +367,7 @@ export class ChatWsGateway
   }
 
   @SubscribeMessage("conversation.message.list")
-  async getConversationMessageList(
+  public async getConversationMessageList(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: GetConversationMessageListRequest,
     @CurrentUserId() authUserId: string
@@ -455,7 +458,7 @@ export class ChatWsGateway
   }
 
   @SubscribeMessage("conversation.message.markSeen")
-  async markMessageAsSeen(
+  public async markMessageAsSeen(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: MarkMessageSeenRequest,
     @CurrentUserId() authUserId: string

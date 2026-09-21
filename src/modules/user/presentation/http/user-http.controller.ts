@@ -31,7 +31,7 @@ import {
 @Controller("user")
 @ApiTags("User")
 export class UserHttpController {
-  constructor(private readonly commandBus: CommandBus) {}
+  public constructor(private readonly commandBus: CommandBus) {}
 
   @ApiOperation({
     summary: "Block",
@@ -47,7 +47,7 @@ export class UserHttpController {
   })
   @Post("block")
   @UseGuards(UserHttpGuard)
-  async block(
+  public async block(
     @Body() body: BlockRequestBody,
     @CurrentUserId() authUserId: string
   ): Promise<BlockResponse> {
@@ -73,7 +73,7 @@ export class UserHttpController {
   @ApiNoContentResponse({ type: null, description: "User was not blocked" })
   @Delete("block/:targetUserId")
   @UseGuards(UserHttpGuard)
-  async unblock(
+  public async unblock(
     @Param() params: UnblockRequestParams,
     @CurrentUserId() authUserId: string
   ): Promise<UnblockResponse> {

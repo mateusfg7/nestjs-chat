@@ -7,24 +7,24 @@ import { createAdapter } from "@socket.io/redis-adapter";
 
 export class RedisIoAdapter extends IoAdapter {
   private readonly logger = new Logger(RedisIoAdapter.name);
-  private adapterConstructor: ReturnType<typeof createAdapter>;
+  private adapterConstructor: ReturnType<typeof createAdapter> | undefined;
 
-  constructor(
+  public constructor(
     private readonly socketConfig: ConfigType<typeof wsConfig>,
-    readonly app: INestApplication,
+    public readonly app: INestApplication,
     private readonly redisProvider: RedisProvider
   ) {
     super(app);
   }
 
-  async connectToRedis(): Promise<void> {
+  public connectToRedis(): void {
     const pubClient = this.redisProvider.getClient();
     const subClient = pubClient.duplicate();
 
     this.adapterConstructor = createAdapter(pubClient, subClient);
   }
 
-  override createIOServer(port: number, options?: any): any {
+  public override createIOServer(port: number, options?: any): any {
     const socketPort = this.socketConfig.port ?? port;
 
     this.logger.log(`Creating Socket.IO server on port ${socketPort}`);

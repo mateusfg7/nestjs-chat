@@ -6,7 +6,7 @@ import { RefreshTokenEntity } from "@modules/auth/domain/models/refresh-token.en
 import { SigninResponse } from "@modules/auth/presentation/http/dtos/signin.dto";
 import { Logger } from "@nestjs/common";
 import { CommandHandler, EventPublisher, ICommandHandler } from "@nestjs/cqrs";
-import * as bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
 import { SigninCommand } from "./signin.command";
 
 @CommandHandler(SigninCommand)
@@ -16,14 +16,14 @@ export class SigninHandler
   private readonly logger = new Logger(SigninHandler.name);
   private readonly HASH_SALT = 10;
 
-  constructor(
+  public constructor(
     private readonly userIntegrationPort: UserIntegrationPort,
     private readonly tokenService: TokenService,
     private readonly authRepository: AuthRepositoryPort,
     private readonly publisher: EventPublisher
   ) {}
 
-  async execute(command: SigninCommand): Promise<SigninResponse> {
+  public async execute(command: SigninCommand): Promise<SigninResponse> {
     //Validate Credentials
     const user = await this.userIntegrationPort.validatePassword(
       command.property,
@@ -54,7 +54,7 @@ export class SigninHandler
       await this.authRepository.save(rtDomain);
     } catch {
       this.logger.error(
-        `Error saving refresh token during signin for user ${user.id}`
+        `Error saving refresh token during signin for user ${user.id}\n`
       );
       throw new TokenGenerationException(
         "Failed to create token; please sign in again"
@@ -74,6 +74,6 @@ export class SigninHandler
         accessToken,
         refreshToken: refreshTokenDto.token,
       },
-    };
+    } as SigninResponse;
   }
 }

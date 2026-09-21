@@ -7,8 +7,8 @@ export interface AuthUser {
 }
 
 export abstract class UserIntegrationPort {
-  abstract createUser(data: any): Promise<AuthUser>;
-  abstract validatePassword(
+  public abstract createUser(data: any): Promise<AuthUser>;
+  public abstract validatePassword(
     property: string,
     password: string
   ): Promise<AuthUser>;

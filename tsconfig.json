@@ -20,6 +20,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
+    "strictPropertyInitialization": false,
     "paths": {
       "@common/*": ["src/common/*"],
       "@infrastructure/*": ["src/infrastructure/*"],
