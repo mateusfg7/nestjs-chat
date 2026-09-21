@@ -161,12 +161,8 @@
           "name": "FK_36340a1704b039608e34244511f",
           "tableFrom": "conversation_members",
           "tableTo": "conversations",
-          "columnsFrom": [
-            "conversation_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["conversation_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -174,12 +170,8 @@
           "name": "FK_ae81cc388649f0c1348c155c828",
           "tableFrom": "conversation_members",
           "tableTo": "messages",
-          "columnsFrom": [
-            "last_seen_message_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["last_seen_message_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -187,12 +179,8 @@
           "name": "FK_9efa90fa4b17f5d32d0ed1466fc",
           "tableFrom": "conversation_members",
           "tableTo": "messages",
-          "columnsFrom": [
-            "last_message"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["last_message"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -202,16 +190,12 @@
         "REL_ae81cc388649f0c1348c155c82": {
           "name": "REL_ae81cc388649f0c1348c155c82",
           "nullsNotDistinct": false,
-          "columns": [
-            "last_seen_message_id"
-          ]
+          "columns": ["last_seen_message_id"]
         },
         "REL_9efa90fa4b17f5d32d0ed1466f": {
           "name": "REL_9efa90fa4b17f5d32d0ed1466f",
           "nullsNotDistinct": false,
-          "columns": [
-            "last_message"
-          ]
+          "columns": ["last_message"]
         }
       },
       "policies": {},
@@ -330,12 +314,8 @@
           "name": "FK_af4864dee9672d02ce3d5ecdfa6",
           "tableFrom": "deleted_messages",
           "tableTo": "messages",
-          "columnsFrom": [
-            "message_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["message_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -343,10 +323,7 @@
       "compositePrimaryKeys": {
         "PK_291432ce5670ad7a99d1ec20818": {
           "name": "PK_291432ce5670ad7a99d1ec20818",
-          "columns": [
-            "user_id",
-            "message_id"
-          ]
+          "columns": ["user_id", "message_id"]
         }
       },
       "uniqueConstraints": {},
@@ -434,12 +411,8 @@
           "name": "FK_e5663ce0c730b2de83445e2fd19",
           "tableFrom": "messages",
           "tableTo": "conversations",
-          "columnsFrom": [
-            "conversation_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["conversation_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -447,12 +420,8 @@
           "name": "messages_sender_id_fk",
           "tableFrom": "messages",
           "tableTo": "conversation_members",
-          "columnsFrom": [
-            "sender_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sender_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "cascade"
         }
@@ -506,12 +475,8 @@
           "name": "FK_dfcd8a81016d1de587fbd2d70bf",
           "tableFrom": "user_blocks",
           "tableTo": "users",
-          "columnsFrom": [
-            "blocker_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["blocker_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
@@ -519,12 +484,8 @@
           "name": "FK_7a0806a54f0ad9ced3e247cacd1",
           "tableFrom": "user_blocks",
           "tableTo": "users",
-          "columnsFrom": [
-            "blocked_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["blocked_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -532,10 +493,7 @@
       "compositePrimaryKeys": {
         "PK_48667515438e7d0f0fed998b193": {
           "name": "PK_48667515438e7d0f0fed998b193",
-          "columns": [
-            "blocker_id",
-            "blocked_id"
-          ]
+          "columns": ["blocker_id", "blocked_id"]
         }
       },
       "uniqueConstraints": {},
@@ -664,23 +622,17 @@
     "public.conversations_type_enum": {
       "name": "conversations_type_enum",
       "schema": "public",
-      "values": [
-        "DIRECT"
-      ]
+      "values": ["DIRECT"]
     },
     "public.messages_type_enum": {
       "name": "messages_type_enum",
       "schema": "public",
-      "values": [
-        "TEXT"
-      ]
+      "values": ["TEXT"]
     },
     "public.users_role_enum": {
       "name": "users_role_enum",
       "schema": "public",
-      "values": [
-        "USER"
-      ]
+      "values": ["USER"]
     }
   },
   "schemas": {},
